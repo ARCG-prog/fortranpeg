@@ -1,2 +1,4 @@
 /node_modules
 /.vscode
+*.exe
+/fases/fase1/parser/fortranT

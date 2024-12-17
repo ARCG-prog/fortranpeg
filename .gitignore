@@ -2,3 +2,4 @@
 /.vscode
 *.exe
 /fases/fase1/parser/fortranT
+*.mod

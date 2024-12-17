@@ -7,6 +7,11 @@
     import { ids, usos} from '../index.js'
     import { ErrorReglas } from './error.js';
     import { errores } from '../index.js'
+
+    import {NodoU,
+    NodoD
+
+    } from './visitor/Nodo.js'//comentario
 }}
 
 gramatica = _ producciones+ _ {
@@ -123,9 +128,11 @@ numero = [0-9]+
 identificador = [_a-z]i[_a-z0-9]i* { return text() }
 
 
-_ = (Comentarios /[ \t\n\r])*
+_ = (Comentarios /[ \t\n\r])* {
+
+}
 
 
 Comentarios = 
-    "//" [^\n]* 
-    / "/*" (!"*/" .)* "*/"
+    "//" [^\n]* {  }
+    / "/*" (!"*/" .)* "*/" {}

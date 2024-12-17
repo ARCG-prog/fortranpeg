@@ -7,6 +7,7 @@ export class Nodo {
     }
 }
 
+//nodos solo para pruebas
 export class NodoU extends Nodo {
     constructor(a,b,str) {
         super();
@@ -25,6 +26,17 @@ export class NodoD extends Nodo {
     }
     accept(visitor) {
         return visitor.visitNodoD(this);
+    }
+}
+
+//nodo que si es para el codigo
+export class nComentario extends Nodo{
+    constructor(str){
+        super();
+        this.str = str;
+    }
+    accept(visitor){
+        return visitor.visitnComentario(this);
     }
 }
 

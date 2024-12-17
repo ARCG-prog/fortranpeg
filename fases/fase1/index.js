@@ -6,6 +6,7 @@ import { ErrorReglas } from './parser/error.js';
 //importaciones
 import InterpreteToken from './parser/InterpreteToken.js';
 import { NodoU,NodoD } from './parser/visitor/Nodo.js';
+//end importaciones
 
 export let ids = []
 export let usos = []
@@ -34,11 +35,13 @@ const salida = monaco.editor.create(
 
 let decorations = [];
 
+//mis funciones
 function runVisitor() {
     let nodo1=new NodoU( new NodoD("iz"), new NodoD("der"), "+");
     let interprete1= new InterpreteToken();
     return interprete1.visitNodoU(nodo1);
 }
+//end mis funciones
 
 // Analizar contenido del editor
 const analizar = () => {

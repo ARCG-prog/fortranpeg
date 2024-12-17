@@ -28,4 +28,5 @@ export class NodoD extends Nodo {
     }
 }
 
+//se debe exportar todos los nodos
 export default {NodoU, NodoD};

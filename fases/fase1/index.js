@@ -3,6 +3,10 @@ import { parse } from './parser/gramatica.js';
 import { ErrorReglas } from './parser/error.js';
 
 
+//importaciones
+import InterpreteToken from './parser/InterpreteToken.js';
+import { NodoU,NodoD } from './parser/visitor/Nodo.js';
+
 export let ids = []
 export let usos = []
 export let errores = []
@@ -30,12 +34,23 @@ const salida = monaco.editor.create(
 
 let decorations = [];
 
+function runVisitor() {
+    let nodo1=new NodoU( new NodoD("iz"), new NodoD("der"), "+");
+    let interprete1= new InterpreteToken();
+    return interprete1.visitNodoU(nodo1);
+}
+
 // Analizar contenido del editor
 const analizar = () => {
+    debugger;
+    console.log(runVisitor());
+
     const entrada = editor.getValue();
     ids.length = 0
     usos.length = 0
     errores.length = 0
+    
+
     try {
         const cst = parse(entrada)
 

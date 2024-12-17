@@ -1,0 +1,8 @@
+{
+  "dependencies": {
+    "peggy": "^4.2.0"
+  },
+  "scripts": {
+    "parser": "peggy --format es -o fases/fase1/parser/grammar.js fases/fase1/parser/gramatica.pegjs"
+  }
+}

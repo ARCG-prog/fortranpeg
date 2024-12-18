@@ -8,10 +8,8 @@
     import { ErrorReglas } from './error.js';
     import { errores } from '../index.js'
 
-    import {NodoU,
-    NodoD
-
-    } from './visitor/Nodo.js'//comentario
+    import {funcAnalizarComentarios, funcIdentificador, funcLiterales
+    } from './funciones/func.js'//comentario
 }}
 
 gramatica = _ producciones+ _ {
@@ -28,20 +26,27 @@ gramatica = _ producciones+ _ {
     }*/
 }
 
-producciones = _ id:identificador _ (literales)? _ "=" _ opciones (_";")? { /*ids.push(id)*/ }
+producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
+    /*ids.push(id)*/ 
+        console.log("ids: ", id)
+        console.log("op: ", op)
+    }
 
-opciones = union (_ "/" _ union)*
+opciones = una:union op:(_ "/" _ unb:union {return unb;})* {
+        console.log("op: ", op)
+        return op.reduce((acc, curr) => acc + "<>" + curr, una); //una=inicio
+    }
 
-union = expresion (_ expresion !(_ literales? _ "=") )*
+union = expa:expresion (_ expresion !(_ literales? _ "=") )* {return expa;}
 
-expresion  = (etiqueta/varios)? _ expresiones _ ([?+*]/conteo)?
+expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {return exp;}
 
 etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 
 varios = ("!"/"$"/"@"/"&")
 
 expresiones  =  id:identificador { /*usos.push(id)*/ }
-                / literales "i"?
+                / lit:literales "i"? {return lit;}
                 / "(" _ opciones _ ")"
                 / corchetes "i"?
                 / "."
@@ -90,12 +95,12 @@ corchete
 texto
     = [^\[\]]+
 
-literales = '"' stringDobleComilla* '"'
-            / "'" stringSimpleComilla* "'"
+literales = '"' stringDobleComilla* '"' {return funcLiterales();}
+            / "'" stringSimpleComilla* "'"{return funcLiterales();}
 
-stringDobleComilla = !('"' / "\\" / finLinea) .
-                    / "\\" escape
-                    / continuacionLinea
+stringDobleComilla = !('"' / "\\" / finLinea) . {}
+                    / "\\" escape {}
+                    / continuacionLinea {}
 
 stringSimpleComilla = !("'" / "\\" / finLinea) .
                     / "\\" escape
@@ -124,7 +129,7 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* { /*return text()*/ }
+identificador = [_a-z]i[_a-z0-9]i* {return funcIdentificador();/*return text()*/ }
 
 
 _ = (Comentarios /[ \t\n\r])* {
@@ -133,5 +138,5 @@ _ = (Comentarios /[ \t\n\r])* {
 
 
 Comentarios = 
-    "//" [^\n]* {  }
-    / "/*" (!"*/" .)* "*/" {  }
+    "//" [^\n]* { return funcAnalizarComentarios(1); }
+    / "/*" (!"*/" .)* "*/" { return funcAnalizarComentarios(0); }

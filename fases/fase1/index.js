@@ -4,14 +4,16 @@ import { ErrorReglas } from './parser/error.js';
 
 
 //importaciones
-import InterpreteToken from './parser/InterpreteToken.js';
-import { NodoU,NodoD } from './parser/visitor/Nodo.js';
+/*import InterpreteToken from './parser/InterpreteToken.js';
+import { NodoU,NodoD } from './parser/visitor/Nodo.js';*/
 //end importaciones
 
 export let ids = []
 export let usos = []
 export let errores = []
 
+//crear un boton
+const btn_analizar = document.getElementById('btn_analizar');
 
 // Crear el editor principal
 const editor = monaco.editor.create(
@@ -37,16 +39,17 @@ let decorations = [];
 
 //mis funciones
 function runVisitor() {
+    /*
+    debugger;
     let nodo1=new NodoU( new NodoD("iz"), new NodoD("der"), "+");
     let interprete1= new InterpreteToken();
-    return interprete1.visitNodoU(nodo1);
+    return interprete1.visitNodoU(nodo1);*/
 }
 //end mis funciones
 
 // Analizar contenido del editor
 const analizar = () => {
-    debugger;
-    console.log(runVisitor());
+    //console.log(runVisitor());
 
     const entrada = editor.getValue();
     ids.length = 0
@@ -117,9 +120,13 @@ const analizar = () => {
 };
 
 // Escuchar cambios en el contenido del editor
-editor.onDidChangeModelContent(() => {
+/*editor.onDidChangeModelContent(() => {
+    analizar();
+});*/
+btn_analizar.addEventListener('click', ()=>{
     analizar();
 });
+
 
 // CSS personalizado para resaltar el error y agregar un warning
 const style = document.createElement('style');

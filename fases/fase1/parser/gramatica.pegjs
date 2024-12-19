@@ -27,7 +27,8 @@ gramatica = _ producciones+ _ {
 }
 
 producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
-    /*ids.push(id)*/ 
+        /*ids.push(id)*/
+        
         console.log("ids: ", id)
         console.log("op: ", op)
     }

@@ -23,14 +23,14 @@ module moduloFuncionesRetorno
 
     ! Analizar cadenaAA
     if (str(columna:columna+1) == "aa") then
-      res%tipoOpcion = columna + 2
-      allocate(character(len=2) :: res%resultado)
+      allocate(character(len=2) :: res%resultado)!no se si se necesita el len=2
       res%resultado = 'aa'
+      res%tipoOpcion = columna + 2!aumnento columna cuando se encuentra aa
       return
     else
+      allocate(character(len=1) :: res%resultado)!no se si se necesita el len=2
+      res%resultado = ' '
       res%tipoOpcion = -1
-      allocate(character(len=1) :: res%resultado)
-      res%resultado = ''
       return
     end if
   end function analizarCadenaAAEjemplo
@@ -55,14 +55,14 @@ module moduloEstados
       alias=" "
       res = analizarCadenaAAEjemplo(txt, columna)
       if (res%tipoOpcion == -1) then
-        res%tipoOpcion = -1
         res%resultado = alias
-        globalState = globalState + 1
+        res%tipoOpcion = -1
+        globalState = globalState + 1!para no ciclo infintio
         return
       else
         res%resultado = res%resultado
         res%tipoOpcion = res%tipoOpcion
-        globalState = globalState + 1
+        globalState = globalState + 1!para no ciclo infintio
         deallocate(alias)
         return
       end if

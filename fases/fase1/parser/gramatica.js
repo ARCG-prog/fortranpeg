@@ -321,10 +321,6 @@ function peg$parse(input, options) {
   var peg$f16 = function() {};
   var peg$f17 = function() { return new nIdentificador();/*return text()*/ };
   var peg$f18 = function() {
-    //guarda funcion(txt,columna){ codigo }
-    //funcion(txt,columna)
-    /*
-    */
     
 };
   var peg$f19 = function() {};

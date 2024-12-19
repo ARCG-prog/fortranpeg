@@ -37,4 +37,8 @@ export default class InterpreteToken extends Visitor {
     visitnProducciones(nProducciones) {
         return `${nProducciones.id.accept(this)} ${nProducciones.op.accept(this)}`;
     }
+
+    visitnIgual(nIgual) {
+        return `txt`;
+    }
 }

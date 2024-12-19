@@ -23,4 +23,8 @@ export class Visitor{
     visitnProducciones(nProducciones){
         throw new Error("Método 'visitnProducciones' debe ser implementado.");
     }
+
+    visitnIgual(nIgual){
+        throw new Error("Método 'visitnIgual' debe ser implementado.");
+    }
 }

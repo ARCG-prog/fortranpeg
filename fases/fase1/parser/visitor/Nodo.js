@@ -69,6 +69,15 @@ export class nProducciones extends Nodo{
     }
 }
 
+export class nIgual extends Nodo{
+    constructor(){
+        super();
+    }
+    accept(visitor){
+        return visitor.visitnIgual(this);
+    }
+}
+
 //se debe exportar todos los nodos
 export default { NodoU, NodoD, 
     nComentario, nLiterales, nIdentificador 

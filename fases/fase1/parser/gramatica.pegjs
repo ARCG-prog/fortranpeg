@@ -143,10 +143,6 @@ identificador = [_a-z]i[_a-z0-9]i* { return new nIdentificador();/*return text()
 
 
 _ = (Comentarios /[ \t\n\r])* {
-    //guarda funcion(txt,columna){ codigo }
-    //funcion(txt,columna)
-    /*
-    */
     
 }
 

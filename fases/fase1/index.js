@@ -8,13 +8,29 @@ import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteTok
 import { Visitor } from './parser/visitor/visitInterpreteToken/Visitor.js';
 import { NodoU,NodoD } from './parser/visitor/Nodo.js';
 //end importaciones
+//mis funciones
+// Función para crear y descargar un archivo
+function descargarArchivo(contenido, nombreArchivo, tipoContenido) {
+    const a = document.createElement('a');
+    const archivo = new Blob([contenido], { type: tipoContenido });
+    a.href = URL.createObjectURL(archivo);
+    a.download = nombreArchivo;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+//fin mis funciones
+//mis variables
+    //crear un boton
+const btn_analizar = document.getElementById('btn_analizar');
+const btn_descargar = document.getElementById('btn_descargar');
+//fin mis variables
 
 export let ids = []
 export let usos = []
 export let errores = []
 
-//crear un boton
-const btn_analizar = document.getElementById('btn_analizar');
+
 
 // Crear el editor principal
 const editor = monaco.editor.create(
@@ -50,7 +66,7 @@ const analizar = () => {
     ids.length = 0
     usos.length = 0
     errores.length = 0
-    let textoFortran=""
+    let textoFortran=" ";
 
     //try {
         const nodo = parse(entrada)
@@ -59,6 +75,13 @@ const analizar = () => {
         for (const instruccion of nodo) {
             textoFortran=instruccion.accept(interprete1);
         }
+        
+        // Uso de la función
+        //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');
+        btn_descargar.addEventListener('click', () => {
+            descargarArchivo(textoFortran, 'entrada.f90', 'text/plain');
+        });
+
 
         if(errores.length > 0){
             salida.setValue(
@@ -126,6 +149,7 @@ const analizar = () => {
 btn_analizar.addEventListener('click', ()=>{
     analizar();
 });
+
 
 
 // CSS personalizado para resaltar el error y agregar un warning

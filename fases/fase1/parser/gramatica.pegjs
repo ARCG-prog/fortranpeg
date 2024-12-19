@@ -49,7 +49,7 @@ varios = ("!"/"$"/"@"/"&")
 expresiones  =  id:identificador { /*usos.push(id)*/ }
                 / lit:literales "i"? {return lit;}
                 / "(" _ opciones _ ")"
-                / corchetes "i"?
+                / corchetes "i"? /**/
                 / "."
                 / "!."
 
@@ -68,8 +68,17 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 
 // Regla principal que analiza corchetes con contenido
 corchetes
-    = "[" contenido:(rango / contenido)+ "]" {
+    = "[" contenido:(/*rango /*/ contenido)+ "]" {
         //return `Entrada válida: [${input}]`;
+        /*  
+
+            let map = new Map();
+            if !map.has("contenido") {
+                map.set("corchetes", "funcion corchetes()");
+            }
+            
+            return funcCorchetes(map);
+        */
     }
 
 // Regla para validar un rango como [A-Z]
@@ -85,16 +94,16 @@ rango
 // Regla para caracteres individuales
 caracter
     = [a-zA-Z0-9_ ] { /*return text()*/}
-
+    
 // Coincide con cualquier contenido que no incluya "]"
 contenido
-    = (corchete / texto)+
+    = (/*corchete /*/ texto)+
 
 corchete
     = "[" contenido "]"
 
 texto
-    = [^\[\]]+
+    = [^\[\]]+ { /**/}
 
 literales = '"' stringDobleComilla* '"' {return funcLiterales();}
             / "'" stringSimpleComilla* "'"{return funcLiterales();}
@@ -112,7 +121,7 @@ continuacionLinea = "\\" secuenciaFinLinea
 finLinea = [\n\r\u2028\u2029]
 
 escape = "'"
-        / '"'
+        / '"' 
         / "\\"
         / "b"
         / "f"
@@ -130,10 +139,14 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* {return funcIdentificador();/*return text()*/ }
+identificador = [_a-z]i[_a-z0-9]i* {return funcIdentificador();/*return text()*/ } 
+
 
 
 _ = (Comentarios /[ \t\n\r])* {
+    //guarda funcion(txt,columna){ codigo }
+    //funcion(txt,columna)
+    
     
 }
 
@@ -141,3 +154,4 @@ _ = (Comentarios /[ \t\n\r])* {
 Comentarios = 
     "//" [^\n]* { return funcAnalizarComentarios(1); }
     / "/*" (!"*/" .)* "*/" { return funcAnalizarComentarios(0); }
+

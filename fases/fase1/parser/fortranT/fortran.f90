@@ -28,7 +28,7 @@ module moduloFuncionesRetorno
       res%tipoOpcion = columna + 2!aumnento columna cuando se encuentra aa
       return
     else
-      allocate(character(len=1) :: res%resultado)!no se si se necesita el len=2
+      allocate(character(len=1) :: res%resultado)!no se si se necesita el len=2g
       res%resultado = ' '
       res%tipoOpcion = -1
       return

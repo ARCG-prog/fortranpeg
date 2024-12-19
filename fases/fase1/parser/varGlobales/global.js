@@ -1,10 +1,13 @@
 // Crear y exportar el Map global
-export const globalFuncionesCreadas = new Map();
-
-
-function a(){
-    if (globalFuncionesCreadas.has("comentarios")) {
-        globalFuncionesCreadas.get("comentarios", "funtion comentario(txt,columna){return txt;}");
+import { Nodo } from "../visitor/Nodo.js";
+/**
+ * @type {Map<string, Nodo>}
+ */
+export let gFuncionesCreadas = new Map();
+export let config = {
+    appName: 'Mi Aplicación',
+    version: '1.0.0',
+    variables: {
+        gFuncionesCreadas
     }
-    return "funcion(txt,columna);"
-}
+};

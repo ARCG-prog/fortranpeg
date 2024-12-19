@@ -9,13 +9,14 @@
     import { errores } from '../index.js'
 
 
-    import {
-        globalFuncionesCreadas
-    } from '.varGlobales/global.js'
+    import { nLiterales, 
+        nIdentificador,
+        nProducciones
+    } from './visitor/Nodo.js';
 }}
 
-gramatica = _ producciones+ _ {
-
+gramatica = _ pr:producciones+ _ {
+    return pr;
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
@@ -29,7 +30,7 @@ gramatica = _ producciones+ _ {
 }
 
 producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
-        /*ids.push(id)*/
+        return new nProducciones(id, op);
     }
 
 opciones = una:union op:(_ "/" _ unb:union {return unb;})* {
@@ -103,8 +104,8 @@ corchete
 texto
     = [^\[\]]+ { /**/}
 
-literales = '"' stringDobleComilla* '"' {}
-            / "'" stringSimpleComilla* "'"{}
+literales = '"' stringDobleComilla* '"' { return new nLiterales(); }
+            / "'" stringSimpleComilla* "'"{ return new nLiterales(); }
 
 stringDobleComilla = !('"' / "\\" / finLinea) . {}
                     / "\\" escape {}
@@ -137,7 +138,7 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* {/*return text()*/ } 
+identificador = [_a-z]i[_a-z0-9]i* { return new nIdentificador();/*return text()*/ } 
 
 
 

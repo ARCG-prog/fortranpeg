@@ -22,6 +22,7 @@ export class NodoU extends Nodo {
 export class NodoD extends Nodo {
     constructor(str) {
         super();
+
         this.str = str;
     }
     accept(visitor) {
@@ -31,14 +32,45 @@ export class NodoD extends Nodo {
 
 //nodo que si es para el codigo
 export class nComentario extends Nodo{
-    constructor(str){
+    constructor(){
         super();
-        this.str = str;
     }
     accept(visitor){
         return visitor.visitnComentario(this);
     }
 }
 
+export class nLiterales extends Nodo{
+    constructor(){
+        super();
+    }
+    accept(visitor){
+        return visitor.visitnLiterales(this);
+    }
+}
+
+export class nIdentificador extends Nodo{
+    constructor(){
+        super();
+    }
+    accept(visitor){
+        return visitor.visitnIdentificador(this);
+    }
+}
+
+export class nProducciones extends Nodo{
+    constructor(id,op){
+        super();
+        this.id = id;
+        this.op = op;
+    }
+    accept(visitor){
+        return visitor.visitnProducciones(this);
+    }
+}
+
 //se debe exportar todos los nodos
-export default {NodoU, NodoD};
+export default { NodoU, NodoD, 
+    nComentario, nLiterales, nIdentificador 
+    ,nProducciones
+};

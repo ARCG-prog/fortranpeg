@@ -1,5 +1,6 @@
 /node_modules
 /.vscode
 *.exe
-/fases/fase1/parser/fortranT
 *.mod
+fases/fase1/parser/fortranT/mine.f90
+fases/fase1/parser/fortranT/analizarstr.f90

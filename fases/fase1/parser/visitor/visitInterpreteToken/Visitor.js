@@ -11,4 +11,16 @@ export class Visitor{
     visitnComentario(nComentario){
         throw new Error("Método 'visitnComentario' debe ser implementado.");
     }
+
+    visitnLiterales(nLiterales){
+        throw new Error("Método 'visitnLiterales' debe ser implementado.");
+    }
+    
+    visitnIdentificador(nIdentificador){
+        throw new Error("Método 'visitnIdentificador' debe ser implementado.");
+    }
+
+    visitnProducciones(nProducciones){
+        throw new Error("Método 'visitnProducciones' debe ser implementado.");
+    }
 }

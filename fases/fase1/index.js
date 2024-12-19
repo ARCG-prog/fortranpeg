@@ -5,6 +5,7 @@ import { ErrorReglas } from './parser/error.js';
 
 //importaciones
 import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteToken.js';
+import { Visitor } from './parser/visitor/visitInterpreteToken/Visitor.js';
 import { NodoU,NodoD } from './parser/visitor/Nodo.js';
 //end importaciones
 
@@ -37,28 +38,27 @@ const salida = monaco.editor.create(
 
 let decorations = [];
 
-//mis funciones
-function runVisitor() {
-    /*
-    debugger;
-    let nodo1=new NodoU( new NodoD("iz"), new NodoD("der"), "+");
-    let interprete1= new InterpreteToken();
-    return interprete1.visitNodoU(nodo1);*/
-}
-//end mis funciones
 
 // Analizar contenido del editor
 const analizar = () => {
     //console.log(runVisitor());
 
     const entrada = editor.getValue();
+
+   
+
     ids.length = 0
     usos.length = 0
     errores.length = 0
-    
+    let textoFortran=""
 
-    try {
-        const cst = parse(entrada)
+    //try {
+        const nodo = parse(entrada)
+        let interprete1 = new InterpreteToken();
+        debugger;
+        for (const instruccion of nodo) {
+            textoFortran=instruccion.accept(interprete1);
+        }
 
         if(errores.length > 0){
             salida.setValue(
@@ -72,7 +72,7 @@ const analizar = () => {
         // salida.setValue("Análisis Exitoso");
         // Limpiar decoraciones previas si la validación es exitosa
         decorations = editor.deltaDecorations(decorations, []);
-    } catch (e) {
+    /*} catch (e) {
 
         if(e.location === undefined){
             
@@ -116,7 +116,7 @@ const analizar = () => {
             ]);
         }
         
-    }
+    }*/
 };
 
 // Escuchar cambios en el contenido del editor

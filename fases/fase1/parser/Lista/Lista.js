@@ -1,10 +1,10 @@
-import { Nodo } from "./Nodo.js";
+import { NodoL } from "./NodoL.js";
 export class Lista {
     constructor() {
         this.primero = null;
         this.ultimo = null;
     }
-    /** * * @param {Nodo} nuevo */
+    /** * * @param {NodoL} nuevo */
     addUltimo(nuevo) {
         if (this.primero == null) {
             this.primero = nuevo;

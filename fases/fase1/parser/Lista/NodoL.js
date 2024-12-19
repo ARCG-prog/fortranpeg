@@ -1,9 +1,9 @@
-export class Nodo {
+export class NodoL {
     constructor() {
 
-        /**@type {Nodo}*/
+        /**@type {NodoL}*/
         this.siguiente=null;
-        /**@type {Nodo}*/
+        /**@type {NodoL}*/
         this.anterior=null;
         /**@type {string}-codigo de error fortran*/
         this.codigoError="";
@@ -25,5 +25,10 @@ export class Nodo {
         this.codigoAceptado=codigoAceptado;
     }
 
+    setCodigoFuncion(codigoFuncion){
+        this.codigoFuncion=codigoFuncion;
+    }
+
+    getCodigoFuncion=()=> this.codigoFuncion;
     getAlias=()=> this.alias;
 }

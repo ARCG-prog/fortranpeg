@@ -1,3 +1,4 @@
+
 export class Visitor{
     //codigo solo para pruebas
     visitNodoU(NodoU){
@@ -26,5 +27,10 @@ export class Visitor{
 
     visitnIgual(nIgual){
         throw new Error("Método 'visitnIgual' debe ser implementado.");
+    }
+
+    /**@param {Nodo} nGramatica */
+    visitnGramatica(nGramatica){
+        throw new Error("Método 'visitnGramatica' debe ser implementado.");
     }
 }

@@ -11,12 +11,13 @@
 
     import { nLiterales, 
         nIdentificador,
-        nProducciones
+        nProducciones,
+        nGramatica
     } from './visitor/Nodo.js';
 }}
 
 gramatica = _ pr:producciones+ _ {
-    return pr;
+    return new nGramatica(pr);
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));

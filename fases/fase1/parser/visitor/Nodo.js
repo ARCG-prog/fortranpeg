@@ -1,4 +1,5 @@
 
+
 export class Nodo {
     constructor() {
     }
@@ -78,8 +79,18 @@ export class nIgual extends Nodo{
     }
 }
 
+export class nGramatica extends Nodo{
+    constructor(producciones){
+        super();
+        this.producciones = producciones;
+    }
+    accept(visitor){
+        return visitor.visitnGramatica(this);
+    }
+}
+
 //se debe exportar todos los nodos
 export default { NodoU, NodoD, 
     nComentario, nLiterales, nIdentificador 
-    ,nProducciones
+    , nProducciones, nGramatica
 };

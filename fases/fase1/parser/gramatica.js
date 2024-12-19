@@ -16,7 +16,8 @@
 
     import { nLiterales, 
         nIdentificador,
-        nProducciones
+        nProducciones,
+        nGramatica
     } from './visitor/Nodo.js';
 
 function peg$subclass(child, parent) {
@@ -270,7 +271,7 @@ function peg$parse(input, options) {
   var peg$e37 = peg$literalExpectation("*/", false);
 
   var peg$f0 = function(pr) {
-    return pr;
+    return new nGramatica(pr);
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));

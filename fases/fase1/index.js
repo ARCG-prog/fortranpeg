@@ -5,8 +5,7 @@ import { ErrorReglas } from './parser/error.js';
 
 //importaciones
 import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteToken.js';
-import { Visitor } from './parser/visitor/visitInterpreteToken/Visitor.js';
-import { NodoU,NodoD } from './parser/visitor/Nodo.js';
+import { config } from './parser/varGlobales/global.js';
 //end importaciones
 //mis funciones
 // Función para crear y descargar un archivo
@@ -69,12 +68,12 @@ const analizar = () => {
     let textoFortran=" ";
 
     //try {
+        config.variables.gFuncionesCreadas.clear();
         const nodo = parse(entrada)
         let interprete1 = new InterpreteToken();
         debugger;
-        for (const instruccion of nodo) {
-            textoFortran=instruccion.accept(interprete1);
-        }
+        nodo.accept(interprete1);
+
         
         // Uso de la función
         //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');

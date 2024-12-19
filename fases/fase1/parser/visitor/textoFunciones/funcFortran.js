@@ -131,4 +131,8 @@ export const analizarIdentificador =
   end function analizarIdentificador
 `
 
-export default { analizarLiterales };
+export  function estados(a){
+  return "a";
+}
+
+export default { analizarLiterales, analizarIdentificador };

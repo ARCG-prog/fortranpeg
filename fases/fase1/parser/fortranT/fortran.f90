@@ -125,6 +125,43 @@ module moduloFuncionesRetorno
     end do
   end function analizarStringComillas
   
+  function analizarIdentificador(str, columna) result(res)
+    character(len=*), intent(in) :: str
+    integer, intent(in) :: columna
+    type(clase_return) :: res
+    integer :: i
+
+    i = columna
+    allocate(character(len=0) :: res%resultado)
+    res%tipoOpcion = -1
+
+    ! ! Ignorar espacios en blanco
+    ! do while (i <= len_trim(str) .and. str(i:i) == ' ')
+    !   i = i + 1
+    ! end do
+
+    ! Verificamos que el primer carácter sea un identificador válido
+    if (i <= len_trim(str) .and. (str(i:i) >= 'a' .and. str(i:i) <= 'z' .or. &
+                                   str(i:i) >= 'A' .and. str(i:i) <= 'Z' .or. &
+                                   str(i:i) == '_')) then
+      ! Comenzamos a construir el identificador
+      do while (i <= len_trim(str) .and. &
+                 (str(i:i) >= 'a' .and. str(i:i) <= 'z' .or. &
+                  str(i:i) >= 'A' .and. str(i:i) <= 'Z' .or. &
+                  str(i:i) >= '0' .and. str(i:i) <= '9' .or. &
+                  str(i:i) == '_'))
+        res%resultado = trim(res%resultado) // str(i:i)  ! Concatenamos el carácter al resultado
+        i = i + 1
+      end do
+      res%tipoOpcion = i  ! Actualizamos la posición de la columna
+
+      ! ! Imprimir el identificador encontrado
+      ! print *, "Identificador encontrado:", trim(res%resultado)
+    else
+      res%resultado = ' '  ! No se encontró un identificador válido
+    end if
+  end function analizarIdentificador
+
 end module moduloFuncionesRetorno
 
 module moduloEstados
@@ -144,7 +181,7 @@ module moduloEstados
     if (globalState == 0) then
       allocate(character(len=1) :: alias)
       alias=" "
-      res = analizarStringComillas(txt, columna)
+      res = analizarIdentificador(txt, columna)
       if (res%tipoOpcion == -1) then
         res%resultado = alias
         res%tipoOpcion = -1
@@ -201,9 +238,13 @@ program fortran
   integer :: tam, columna
 
   ! Definir el tamaño de la cadena
-  tam = len(char(34)//"aa"//char(92)//"nbb"//char(34))
-  allocate(character(len=tam) :: txt)
-  txt = char(34)//"aa"//char(92)//"nbb"//char(34)
+  ! tam = len(char(34)//"aa"//char(92)//"nbb"//char(34))
+  ! allocate(character(len=tam) :: txt)
+  ! txt = char(34)//"aa"//char(92)//"nbb"//char(34)
+  
+
+  ! Definir la cadena para probar identificadores
+  txt = "_temp"
 
   columna = 1
   ! Llamar a la subrutina principal con los parámetros

@@ -11,8 +11,8 @@ end module global_variables
 module moduloFuncionesRetorno
   implicit none
   type :: clase_return
-    integer :: tipoOpcion
     character(len=:), allocatable :: resultado
+    integer :: tipoOpcion
   end type clase_return
 
   contains
@@ -34,6 +34,97 @@ module moduloFuncionesRetorno
       return
     end if
   end function analizarCadenaAAEjemplo
+  
+  !analizar string con, comillas simples o dobles
+  function analizarStringComillas(str,columna) result(res)
+    character(len=*), intent(in) :: str
+    integer, intent(in) :: columna
+    type(clase_return) :: res
+    integer :: estadosInternos, i, ascii
+    logical :: bandera
+    estadosInternos = 0
+    i = columna
+    ascii=0
+    bandera = .true.
+
+    do while (bandera)
+      !if (i <= len_trim(str)) then !para que no se salga del rango de la cadena de texto, posible ciclo infinito, error de cadena
+      !  allocatable(character(len=1)) :: res%resultado)
+      !  res%resultado = ''
+      !  res%tipoOpcion = -1
+      !  bandera = .false.
+
+      !estado 0
+        if(estadosInternos==0 .and. str(i:i)==char(34)) then !34="
+          estadosInternos = 1
+          ascii = 34
+          i=i+1
+        else if (estadosInternos==0 .and. str(i:i)==char(39)) then !39='
+          estadosInternos = 1
+          ascii = 39
+          i=i+1
+      
+      !estado 1
+        else if (estadosInternos==1 .and. str(i:i)==char(92)) then !92= barrainvertida
+          estadosInternos=2
+          i=i+1
+        else if (estadosInternos==1 .and. str(i:i)==char(ascii)) then !34=" o 39='
+          estadosInternos = 5
+          allocate(character(len=len(str(columna:i))) :: res%resultado)
+          res%resultado = str(columna:i)
+          i=i+1
+          res%tipoOpcion = i
+          bandera = .false.
+        else if (estadosInternos==1 .and. str(i:i)/=char(ascii)) then ! diferente a 34=" o 39='
+        estadosInternos = 4
+        i=i+1
+
+      !estado 2 !92= barrainvertida !8= retroceso !12= salto de pagina !10= salto de linea !13= retorno de carro !9= tabulacion !11= tabulacion vertical !117= unicode !34=" o 39='
+        else if (estadosInternos == 2 .and. (str(i:i) == char(92) .or. str(i:i) == "b" .or. str(i:i) == "f" .or. str(i:i) == "n" .or. str(i:i) == "r" .or. str(i:i) == "t" .or. str(i:i) == "v" .or. str(i:i) == "u" .or. str(i:i) == char(ascii))) then
+          estadosInternos = 3
+          i = i + 1
+        
+      !estado 3
+        else if (estadosInternos==3 .and. str(i:i)==char(92)) then !92= barrainvertida
+          estadosInternos=2
+          i=i+1
+        else if (estadosInternos==3 .and. str(i:i)==char(ascii)) then !34=" o 39='
+          estadosInternos = 5
+          allocate(character(len=len(str(columna:i))) :: res%resultado)
+          res%resultado = str(columna:i)
+          i=i+1
+          res%tipoOpcion = i
+          bandera = .false.
+        else if (estadosInternos==3 .and. str(i:i)/=char(ascii)) then ! diferente a 34=" o 39='
+          estadosInternos = 4
+          i=i+1
+      
+      !estado 4
+        else if (estadosInternos==4 .and. str(i:i)==char(92)) then !92= barrainvertida
+          estadosInternos=2
+          i=i+1
+        else if (estadosInternos==4 .and. str(i:i)==char(ascii)) then !34=" o 39='
+          estadosInternos = 5
+          allocate(character(len=len(str(columna:i))) :: res%resultado)
+          res%resultado = str(columna:i)
+          i=i+1
+          res%tipoOpcion = i
+          bandera = .false.
+        else if (estadosInternos==4 .and. str(i:i)/=char(ascii)) then ! diferente a 34=" o 39='
+          estadosInternos = 4
+          i=i+1
+      
+      !estado 5
+      else if (estadosInternos==5) then
+        bandera = .false.
+
+      !error posible
+      else
+        bandera = .false.
+      end if
+    end do
+  end function analizarStringComillas
+  
 end module moduloFuncionesRetorno
 
 module moduloEstados
@@ -53,7 +144,7 @@ module moduloEstados
     if (globalState == 0) then
       allocate(character(len=1) :: alias)
       alias=" "
-      res = analizarCadenaAAEjemplo(txt, columna)
+      res = analizarStringComillas(txt, columna)
       if (res%tipoOpcion == -1) then
         res%resultado = alias
         res%tipoOpcion = -1
@@ -110,14 +201,14 @@ program fortran
   integer :: tam, columna
 
   ! Definir el tamaño de la cadena
-  tam = len("aabb"//char(10))
+  tam = len(char(34)//"aa"//char(92)//"nbb"//char(34))
   allocate(character(len=tam) :: txt)
-  txt = "aaaabb"//char(10)
+  txt = char(34)//"aa"//char(92)//"nbb"//char(34)
 
   columna = 1
   ! Llamar a la subrutina principal con los parámetros
   call main(txt, columna)
-
+  
   ! Liberar la memoria
   deallocate(txt)
 end program fortran

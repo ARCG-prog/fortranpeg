@@ -4,8 +4,8 @@ import { ErrorReglas } from './parser/error.js';
 
 
 //importaciones
-/*import InterpreteToken from './parser/InterpreteToken.js';
-import { NodoU,NodoD } from './parser/visitor/Nodo.js';*/
+import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteToken.js';
+import { NodoU,NodoD } from './parser/visitor/Nodo.js';
 //end importaciones
 
 export let ids = []

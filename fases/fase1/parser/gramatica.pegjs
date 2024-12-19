@@ -8,8 +8,10 @@
     import { ErrorReglas } from './error.js';
     import { errores } from '../index.js'
 
-    import {funcAnalizarComentarios, funcIdentificador, funcLiterales
-    } from './funciones/func.js'//comentario
+
+    import {
+        globalFuncionesCreadas
+    } from '.varGlobales/global.js'
 }}
 
 gramatica = _ producciones+ _ {
@@ -28,13 +30,9 @@ gramatica = _ producciones+ _ {
 
 producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
         /*ids.push(id)*/
-        
-        console.log("ids: ", id)
-        console.log("op: ", op)
     }
 
 opciones = una:union op:(_ "/" _ unb:union {return unb;})* {
-        console.log("op: ", op)
         return op.reduce((acc, curr) => acc + "<>" + curr, una); //una=inicio
     }
 
@@ -105,8 +103,8 @@ corchete
 texto
     = [^\[\]]+ { /**/}
 
-literales = '"' stringDobleComilla* '"' {return funcLiterales();}
-            / "'" stringSimpleComilla* "'"{return funcLiterales();}
+literales = '"' stringDobleComilla* '"' {}
+            / "'" stringSimpleComilla* "'"{}
 
 stringDobleComilla = !('"' / "\\" / finLinea) . {}
                     / "\\" escape {}
@@ -139,19 +137,20 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* {return funcIdentificador();/*return text()*/ } 
+identificador = [_a-z]i[_a-z0-9]i* {/*return text()*/ } 
 
 
 
 _ = (Comentarios /[ \t\n\r])* {
     //guarda funcion(txt,columna){ codigo }
     //funcion(txt,columna)
-    
+    /*
+    */
     
 }
 
 
 Comentarios = 
-    "//" [^\n]* { return funcAnalizarComentarios(1); }
-    / "/*" (!"*/" .)* "*/" { return funcAnalizarComentarios(0); }
+    "//" [^\n]* {}
+    / "/*" (!"*/" .)* "*/" {}
 

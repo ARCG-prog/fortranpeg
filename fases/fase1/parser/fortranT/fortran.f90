@@ -177,8 +177,8 @@ module moduloEstados
     type(clase_return) :: res
     character(len=:), allocatable :: alias
 
-
-    if (globalState == 0) then
+    if (globalState==-99) then !solo para utilizar else ifs
+    else if (globalState == 0) then
       allocate(character(len=1) :: alias)
       alias=" "
       res = analizarIdentificador(txt, columna)

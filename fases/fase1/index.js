@@ -6,6 +6,7 @@ import { ErrorReglas } from './parser/error.js';
 //importaciones
 import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteToken.js';
 import { config } from './parser/varGlobales/global.js';
+import { Lista } from './parser/Lista/Lista.js';
 //end importaciones
 //mis funciones
 // Función para crear y descargar un archivo
@@ -72,8 +73,8 @@ const analizar = () => {
         const nodo = parse(entrada)
         let interprete1 = new InterpreteToken();
         debugger;
-        nodo.accept(interprete1);
-
+        /**@type {Lista}*/let lista=nodo.accept(interprete1);
+        textoFortran=lista.generarTodoElCodigo();
         
         // Uso de la función
         //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');

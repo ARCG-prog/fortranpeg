@@ -131,8 +131,115 @@ export const analizarIdentificador =
   end function analizarIdentificador
 `
 
-export  function estados(a){
-  return "a";
+/**  @param {number} estado  @param {string} alias  @param {string} funcion  @param {string} error  @param {string} aceptacion  @returns {string} */
+export  function estadosFortran(estado,alias,funcion,error,aceptacion){
+  return `
+    else if (globalState == ${estado}) then
+      allocate(character(len=${alias.length}) :: alias)
+      alias="${alias}"
+      res = ${funcion}
+      if (res%tipoOpcion == -1) then
+        ${error}
+        return
+      else
+        ${aceptacion}
+        deallocate(alias)
+        return
+      end if
+`;
 }
 
-export default { analizarLiterales, analizarIdentificador };
+/**  @param {string} codigoEstados  @returns {string}*/
+export function moduloEstadosFortran(codigoEstados){
+  return `
+module moduloEstados
+  use global_variables
+  use moduloFuncionesRetorno
+  implicit none
+  public :: estados
+
+  contains
+  function estados(txt, columna) result(res)
+    character(len=*), intent(in) :: txt
+    integer, intent(in) :: columna
+    type(clase_return) :: res
+    character(len=:), allocatable :: alias
+
+    if (globalState==-99) then !solo para utilizar else ifs
+    ${codigoEstados}
+    else
+      res%tipoOpcion = -1
+      res%resultado = ''
+      return
+    end if
+  end function estados
+end module moduloEstados
+`
+}
+
+/**  @param {string} funciones  @returns {string}*/
+export function moduloFuncionesRetornoFortran(funciones){
+return `
+module moduloFuncionesRetorno
+  implicit none
+  type :: clase_return
+    character(len=:), allocatable :: resultado
+    integer :: tipoOpcion
+  end type clase_return
+
+  contains
+  ${funciones}
+  end module moduloFuncionesRetorno
+`;
+}
+
+
+/**  @param {string} funciones  @param {string} estados  @returns {string}*/
+export function unionFortranFinal(funciones,estados){
+  return `
+module global_variables
+  implicit none
+  integer :: globalState
+
+  contains
+  subroutine inicializarEstado()
+    globalState = 0
+  end subroutine inicializarEstado
+end module global_variables
+
+  ${funciones}
+
+  ${estados}
+
+module fortranModule
+  use global_variables
+  use moduloEstados
+  implicit none
+  public :: main
+
+  contains
+  subroutine main(texto, columna)
+    character(len=*), intent(in) :: texto
+    integer, intent(inout) :: columna
+    logical :: analizar
+    type(clase_return) :: res
+
+    analizar = .true.
+    call inicializarEstado()
+
+    do while (analizar)
+      res = estados(texto, columna)
+      if (res%tipoOpcion == -1) then
+        print *, "Error"
+        analizar = .false.
+      else
+        print *, res%resultado
+        columna = res%tipoOpcion
+      end if
+    end do
+  end subroutine main
+end module fortranModule
+`
+}
+
+export default { analizarLiterales, analizarIdentificador, moduloEstadosFortran, moduloFuncionesRetornoFortran, unionFortranFinal };

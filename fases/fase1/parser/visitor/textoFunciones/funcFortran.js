@@ -16,12 +16,10 @@ export function analizarLiterales(str) {
 export function analizarLiteralesLower(str) {
   return `
         !analisis de ${str}
-        lower_string = to_lowercase(input(cursor:cursor + ${str.length - 1}))
-        if ("${str.toLowerCase()}" == lower_string) then
+        if ("${str.toLowerCase()}" == to_lowercase(input(cursor:cursor + ${str.length - 1}))) then
             allocate( character(len=${str.length}) :: lexeme)
             lexeme = input(cursor:cursor + ${str.length - 1})
             cursor = cursor + ${str.length}
-            deallocate(lower_string)
             return
         end if
   `;
@@ -51,7 +49,6 @@ module tokenizer
         character(len=*), intent(in) :: input
         integer, intent(inout) :: cursor
         character(len=:), allocatable :: lexeme
-        character(len=:), allocatable :: lower_string
         
         if (cursor > len(input)) then
             allocate( character(len=3) :: lexeme )

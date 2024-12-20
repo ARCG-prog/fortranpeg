@@ -19,7 +19,6 @@ module tokenizer
         character(len=*), intent(in) :: input
         integer, intent(inout) :: cursor
         character(len=:), allocatable :: lexeme
-        character(len=:), allocatable :: lower_string
         
         if (cursor > len(input)) then
             allocate( character(len=3) :: lexeme )
@@ -27,13 +26,11 @@ module tokenizer
             return
         end if
         
-        !analisis de aBc
-        lower_string = to_lowercase(input(cursor:cursor + 2))
-        if ("abc" == lower_string) then
-            allocate( character(len=3) :: lexeme)
-            lexeme = input(cursor:cursor + 2)
-            cursor = cursor + 3
-            deallocate(lower_string)
+        !analisis de aCdfG
+        if ("acdfg" == to_lowercase(input(cursor:cursor + 4))) then
+            allocate( character(len=5) :: lexeme)
+            lexeme = input(cursor:cursor + 4)
+            cursor = cursor + 5
             return
         end if
   
@@ -48,7 +45,7 @@ program parser
     use tokenizer
     implicit none
 
-    character(len=*), parameter :: input = "aBc"
+    character(len=*), parameter :: input = "aCdfG"
     character(len=:), allocatable :: lexeme
     integer :: cursor
 

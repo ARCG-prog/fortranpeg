@@ -134,9 +134,10 @@ export const analizarIdentificador =
 /**  @param {number} estado  @param {string} alias  @param {string} funcion  @param {string} error  @param {string} aceptacion  @returns {string} */
 export  function estadosFortran(estado,alias,funcion,error,aceptacion){
   return `
+    !estado ${estado}
     else if (globalState == ${estado}) then
-      allocate(character(len=${alias.length}) :: alias)
-      alias="${alias}"
+      allocate(character(len=${alias.length+1}) :: alias)
+      alias="${alias}\n"
       res = ${funcion}
       if (res%tipoOpcion == -1) then
         ${error}
@@ -188,8 +189,8 @@ module moduloFuncionesRetorno
   end type clase_return
 
   contains
-  ${funciones}
-  end module moduloFuncionesRetorno
+    ${funciones}
+end module moduloFuncionesRetorno
 `;
 }
 
@@ -206,11 +207,8 @@ module global_variables
     globalState = 0
   end subroutine inicializarEstado
 end module global_variables
-
-  ${funciones}
-
   ${estados}
-
+  ${funciones}
 module fortranModule
   use global_variables
   use moduloEstados

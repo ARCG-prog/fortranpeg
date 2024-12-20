@@ -9,7 +9,7 @@
     import { errores } from '../index.js'
 
 
-    import { nLiterales,nUnion,nOpciones
+    import { nLiterales,nUnion,nOpciones,nProducciones
     } from './visitor/Nodo.js';
 }}
 
@@ -29,17 +29,24 @@ gramatica = _ pr:producciones+ _ {
     _    "whitespace" = [ \t\n\r]*
     Integer  "integer" = [0-9]+
 */
-producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
-        return op;
+producciones = _ id:identificador _ alias:(literales)? _ "=" _ op:opciones (_";")? { 
+        return new nProducciones(id,alias,op);
     }
 
 opciones = una:union op:(_ "/" _ @union)* {
-    debugger;
-    return new nOpciones([una].concat(...op));   
+    /*const resultado = [];
+    resultado.push(una);
+    op.forEach(element => { resultado.push(element); }); 
+    return new nOpciones(resultado);*/
+    return new nOpciones([una,...op]);
 }
 
 union = expa:expresion union:(_ @expresion !(_ literales? _ "=" ) )* {
-    return new nUnion([expa].concat(...union));
+    /*let resultado = [];
+    resultado.push(expa);
+    union.forEach(element => { resultado.push(element); }); 
+    return new nUnion(resultado);*/
+    return new nUnion([expa,...union]);
 }
 
 expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {

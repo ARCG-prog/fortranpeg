@@ -14,7 +14,7 @@
     import { errores } from '../index.js'
 
 
-    import { nLiterales,nUnion,nOpciones
+    import { nLiterales,nUnion,nOpciones,nProducciones
     } from './visitor/Nodo.js';
 
 function peg$subclass(child, parent) {
@@ -279,15 +279,22 @@ function peg$parse(input, options) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
     }*/
 };
-  var peg$f1 = function(id, op) { 
-        return op;
+  var peg$f1 = function(id, alias, op) { 
+        return new nProducciones(id,alias,op);
     };
   var peg$f2 = function(una, op) {
-    debugger;
-    return new nOpciones([una].concat(...op));   
+    /*const resultado = [];
+    resultado.push(una);
+    op.forEach(element => { resultado.push(element); }); 
+    return new nOpciones(resultado);*/
+    return new nOpciones([una,...op]);
 };
   var peg$f3 = function(expa, union) {
-    return new nUnion([expa].concat(...union));
+    /*let resultado = [];
+    resultado.push(expa);
+    union.forEach(element => { resultado.push(element); }); 
+    return new nUnion(resultado);*/
+    return new nUnion([expa,...union]);
 };
   var peg$f4 = function(exp) {
     return exp;
@@ -559,7 +566,7 @@ function peg$parse(input, options) {
             s9 = null;
           }
           peg$savedPos = s0;
-          s0 = peg$f1(s2, s8);
+          s0 = peg$f1(s2, s4, s8);
         } else {
           peg$currPos = s0;
           s0 = peg$FAILED;

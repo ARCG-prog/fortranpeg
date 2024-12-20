@@ -70,13 +70,15 @@ const analizar = () => {
     //try {
         const nodo = parse(entrada)
         let interprete1 = new InterpreteToken();
-        debugger;
-        textoFortran =nodo.accept(interprete1);
-        debugger;
+        textoFortran = nodo.accept(interprete1)[0].escribir();
+        /*nodo.accept(interprete1).forEach(element => {
+            textoFortran = element.escribir();
+        });;*/
+        debugger
         // Uso de la función
         //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');
         btn_descargar.addEventListener('click', () => {
-            descargarArchivo(tokenizer(textoFortran), 'entrada.f90', 'text/plain');
+            descargarArchivo(textoFortran, 'entrada.f90', 'text/plain');
         });
 
 

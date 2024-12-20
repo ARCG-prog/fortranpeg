@@ -1,6 +1,9 @@
 import { Visitor } from "./Visitor.js";
 import { analizarLiterales,analizarLiteralesLower } from "../textoFunciones/funcFortran.js";
 import {nLiterales,nUnion,nOpciones } from "../Nodo.js";
+import { tipoLiteral,NodoTipo,tipoTokenaizer } from "./NodoTipo.js";
+
+
 export default class InterpreteToken extends Visitor {
     constructor() {
         super();
@@ -15,19 +18,36 @@ export default class InterpreteToken extends Visitor {
 
 
     //codigo que si se utilizara
-    /**  @param {nLiterales} nLiterales  @returns {string}*/
+    /**  @param {nLiterales} nLiterales  @returns {}*/
     visitNLiterales(nLiterales) {
-        debugger;
-        return nLiterales.i ? analizarLiteralesLower(nLiterales.str) : analizarLiterales(nLiterales.str);;
+        let literal = new tipoLiteral();
+        literal.setAll(nLiterales.str, nLiterales.i);
+        return literal;
+        //return nLiterales.i ? analizarLiteralesLower(nLiterales.str) : analizarLiterales(nLiterales.str);
     }
 
-    /**  @param {nUnion} nUnion  @returns {string}*/
+    /**  @param {nUnion} nUnion  @returns {}*/
     visitNUnion(nUnion) {
-        return nUnion.exp.map(element => element.accept(this)).join('\n');
+        debugger;
+        const resultado = [].concat(...nUnion.exp.map(element => element.accept(this)));
+        return resultado;
     }
 
-    /**  @param {nOpciones} nOpciones  @returns {string}*/
+    /**  @param {nOpciones} nOpciones  @returns {}*/
     visitNOpciones(nOpciones){
-        return nOpciones.union.map(element => element.accept(this)).join('\n');
+        const resultado = [].concat(...nOpciones.union.map(element => element.accept(this)));
+        return resultado;
+    }
+
+    /**  @param {nProducciones} nProducciones  @returns {}*/
+    visitNProducciones(nProducciones) {
+        //return `module ${nProducciones.id}`;
+        let res = new tipoTokenaizer();
+        debugger;
+        let nodosTipo= nProducciones.opciones.accept(this);
+        nodosTipo.forEach(element => {
+            res.str +=element.escribir();
+        });
+        return [res];
     }
 }

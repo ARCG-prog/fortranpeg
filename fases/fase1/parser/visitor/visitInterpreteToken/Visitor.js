@@ -15,8 +15,11 @@ export class Visitor {
     visitNUnion(nUnion) {
         throw new Error("Método 'visitNUnion' debe ser implementado.");
     }
-    visitNOpciones(nOpciones) { // Corregido aquí
+    visitNOpciones(nOpciones) {
         throw new Error("Método 'visitNOpciones' debe ser implementado.");
+    }
+    visitNProducciones(nProducciones) {
+        throw new Error("Método 'visitNProducciones' debe ser implementado.");
     }
 }
 

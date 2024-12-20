@@ -61,7 +61,19 @@ export class nOpciones extends Nodo {
         return visitor.visitNOpciones(this);
     }
 }
+export class nProducciones extends Nodo {
+    constructor(id,alias,opciones) {
+        super();
+        this.id = id;
+        this.alias = alias;
+        this.opciones = opciones;
+    }
+    accept(visitor) {
+        return visitor.visitNProducciones(this);
+    }
+}
+
 //se debe exportar todos los nodos
 export default { NodoU, NodoD,
-    nLiterales, nUnion
+    nLiterales, nUnion, nProducciones
 };

@@ -26,18 +26,35 @@ module tokenizer
             return
         end if
         
-        !analisis de aCdfG
-        if ("acdfg" == to_lowercase(input(cursor:cursor + 4))) then
-            allocate( character(len=5) :: lexeme)
-            lexeme = input(cursor:cursor + 4)
-            cursor = cursor + 5
+        !analisis de a
+         if ("a" == input(cursor:cursor + 0)) then
+            allocate( character(len=1) :: lexeme)
+            lexeme = input(cursor:cursor + 0)
+            cursor = cursor + 1
             return
         end if
-  
+      
+        !analisis de b
+         if ("b" == input(cursor:cursor + 0)) then
+            allocate( character(len=1) :: lexeme)
+            lexeme = input(cursor:cursor + 0)
+            cursor = cursor + 1
+            return
+        end if
+      
+        !analisis de cDe
+        if ("cde" == to_lowercase(input(cursor:cursor + 2))) then
+            allocate( character(len=3) :: lexeme)
+            lexeme = input(cursor:cursor + 2)
+            cursor = cursor + 3
+            return
+        end if
+      
         print *, "error lexico en col ", cursor, ', "'//input(cursor:cursor)//'"'
         lexeme = "ERROR"
     end function nextSym
 end module tokenizer
+  
 
 
 
@@ -45,7 +62,7 @@ program parser
     use tokenizer
     implicit none
 
-    character(len=*), parameter :: input = "aCdfG"
+    character(len=*), parameter :: input = "abCDEcdeabb"
     character(len=:), allocatable :: lexeme
     integer :: cursor
 

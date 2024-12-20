@@ -14,7 +14,6 @@
 }}
 
 gramatica = _ pr:producciones+ _ {
-    
     return pr[0];
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
@@ -31,18 +30,16 @@ gramatica = _ pr:producciones+ _ {
     Integer  "integer" = [0-9]+
 */
 producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
-        
         return op;
     }
 
 opciones = una:union op:(_ "/" _ @union)* {
-    
+    debugger;
     return new nOpciones([una].concat(...op));   
 }
 
-union = expa:expresion expb:(_ @expresion !(_ literales? _ "=") )* {
-    
-    return new nUnion([expa].concat(...expb));
+union = expa:expresion union:(_ @expresion !(_ literales? _ "=" ) )* {
+    return new nUnion([expa].concat(...union));
 }
 
 expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {
@@ -54,8 +51,8 @@ etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 varios = ("!"/"$"/"@"/"&")
 
 expresiones  =  id:identificador { /*usos.push(id)*/ }
-                / lit:literales "i"? { return new nLiterales(lit); }
-                / "(" _ opciones _ ")"
+                / lit:literales i:"i"? { return new nLiterales(lit,i?true:false); }
+                / "(" _ @opciones _ ")" 
                 / corchetes "i"? /**/
                 / "."
                 / "!."

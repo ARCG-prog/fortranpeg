@@ -1,5 +1,5 @@
 import { Visitor } from "./Visitor.js";
-import { analizarLiterales } from "../textoFunciones/funcFortran.js";
+import { analizarLiterales,analizarLiteralesLower } from "../textoFunciones/funcFortran.js";
 import {nLiterales,nUnion,nOpciones } from "../Nodo.js";
 export default class InterpreteToken extends Visitor {
     constructor() {
@@ -17,18 +17,17 @@ export default class InterpreteToken extends Visitor {
     //codigo que si se utilizara
     /**  @param {nLiterales} nLiterales  @returns {string}*/
     visitNLiterales(nLiterales) {
-        return `${analizarLiterales(nLiterales.str)}`;
+        debugger;
+        return nLiterales.i ? analizarLiteralesLower(nLiterales.str) : analizarLiterales(nLiterales.str);;
     }
 
     /**  @param {nUnion} nUnion  @returns {string}*/
     visitNUnion(nUnion) {
-        debugger;
         return nUnion.exp.map(element => element.accept(this)).join('\n');
     }
 
     /**  @param {nOpciones} nOpciones  @returns {string}*/
     visitNOpciones(nOpciones){
-        debugger;
         return nOpciones.union.map(element => element.accept(this)).join('\n');
     }
 }

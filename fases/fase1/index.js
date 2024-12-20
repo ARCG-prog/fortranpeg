@@ -72,7 +72,7 @@ const analizar = () => {
         let interprete1 = new InterpreteToken();
         debugger;
         textoFortran =nodo.accept(interprete1);
-        
+        debugger;
         // Uso de la función
         //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');
         btn_descargar.addEventListener('click', () => {

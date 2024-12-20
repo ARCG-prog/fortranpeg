@@ -33,9 +33,11 @@ export class NodoD extends Nodo {
 
 //nodo que si es para el codigo
 export class nLiterales extends Nodo {
-    constructor(str) {
+    /**  @param {string} str  @param {boolean} i */
+    constructor(str,i) {
         super();
         this.str = str;
+        this.i = i;
     }
     accept(visitor) {
         return visitor.visitNLiterales(this);

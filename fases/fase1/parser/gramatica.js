@@ -268,7 +268,6 @@ function peg$parse(input, options) {
   var peg$e37 = peg$literalExpectation("*/", false);
 
   var peg$f0 = function(pr) {
-    
     return pr[0];
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
@@ -281,22 +280,20 @@ function peg$parse(input, options) {
     }*/
 };
   var peg$f1 = function(id, op) { 
-        
         return op;
     };
   var peg$f2 = function(una, op) {
-    
+    debugger;
     return new nOpciones([una].concat(...op));   
 };
-  var peg$f3 = function(expa, expb) {
-    
-    return new nUnion([expa].concat(...expb));
+  var peg$f3 = function(expa, union) {
+    return new nUnion([expa].concat(...union));
 };
   var peg$f4 = function(exp) {
     return exp;
 };
   var peg$f5 = function(id) { /*usos.push(id)*/ };
-  var peg$f6 = function(lit) { return new nLiterales(lit); };
+  var peg$f6 = function(lit, i) { return new nLiterales(lit,i?true:false); };
   var peg$f7 = function(contenido) {
         //return `Entrada válida: [${input}]`;
         /*  
@@ -872,7 +869,7 @@ function peg$parse(input, options) {
           s2 = null;
         }
         peg$savedPos = s0;
-        s0 = peg$f6(s1);
+        s0 = peg$f6(s1, s2);
       } else {
         peg$currPos = s0;
         s0 = peg$FAILED;
@@ -899,8 +896,7 @@ function peg$parse(input, options) {
               if (peg$silentFails === 0) { peg$fail(peg$e9); }
             }
             if (s5 !== peg$FAILED) {
-              s1 = [s1, s2, s3, s4, s5];
-              s0 = s1;
+              s0 = s3;
             } else {
               peg$currPos = s0;
               s0 = peg$FAILED;

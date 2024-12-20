@@ -32,65 +32,34 @@ export class NodoD extends Nodo {
 }
 
 //nodo que si es para el codigo
-export class nComentario extends Nodo{
-    constructor(){
+export class nLiterales extends Nodo {
+    constructor(str) {
         super();
+        this.str = str;
     }
-    accept(visitor){
-        return visitor.visitnComentario(this);
+    accept(visitor) {
+        return visitor.visitNLiterales(this);
     }
 }
-
-export class nLiterales extends Nodo{
-    constructor(){
+export class nUnion extends Nodo {
+    constructor(exp) {
         super();
+        this.exp = exp;
     }
-    accept(visitor){
-        return visitor.visitnLiterales(this);
+    accept(visitor) {
+        return visitor.visitNUnion(this);
     }
 }
-
-export class nIdentificador extends Nodo{
-    constructor(){
+export class nOpciones extends Nodo {
+    constructor(union) {
         super();
+        this.union = union;
     }
-    accept(visitor){
-        return visitor.visitnIdentificador(this);
+    accept(visitor) {
+        return visitor.visitNOpciones(this);
     }
 }
-
-export class nProducciones extends Nodo{
-    constructor(id,op){
-        super();
-        this.id = id;
-        this.op = op;
-    }
-    accept(visitor){
-        return visitor.visitnProducciones(this);
-    }
-}
-
-export class nIgual extends Nodo{
-    constructor(){
-        super();
-    }
-    accept(visitor){
-        return visitor.visitnIgual(this);
-    }
-}
-
-export class nGramatica extends Nodo{
-    constructor(producciones){
-        super();
-        this.producciones = producciones;
-    }
-    accept(visitor){
-        return visitor.visitnGramatica(this);
-    }
-}
-
 //se debe exportar todos los nodos
-export default { NodoU, NodoD, 
-    nComentario, nLiterales, nIdentificador 
-    , nProducciones, nGramatica
+export default { NodoU, NodoD,
+    nLiterales, nUnion
 };

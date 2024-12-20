@@ -9,45 +9,52 @@
     import { errores } from '../index.js'
 
 
-    import { nLiterales, 
-        nIdentificador,
-        nProducciones,
-        nGramatica
+    import { nLiterales,nUnion,nOpciones
     } from './visitor/Nodo.js';
 }}
 
 gramatica = _ pr:producciones+ _ {
-    return new nGramatica(pr);
+    
+    return pr[0];
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
     }
-
     // Validar que todos los usos están en ids
     let noEncontrados = usos.filter(item => !ids.includes(item));
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
     }*/
 }
-
+/*
+    _    "whitespace" = [ \t\n\r]*
+    Integer  "integer" = [0-9]+
+*/
 producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
-        return new nProducciones(id, op);
+        
+        return op;
     }
 
-opciones = una:union op:(_ "/" _ unb:union {return unb;})* {
-        return op.reduce((acc, curr) => acc + "<>" + curr, una); //una=inicio
-    }
+opciones = una:union op:(_ "/" _ @union)* {
+    
+    return new nOpciones([una].concat(...op));   
+}
 
-union = expa:expresion (_ expresion !(_ literales? _ "=") )* {return expa;}
+union = expa:expresion expb:(_ @expresion !(_ literales? _ "=") )* {
+    
+    return new nUnion([expa].concat(...expb));
+}
 
-expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {return exp;}
+expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {
+    return exp;
+}
 
 etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 
 varios = ("!"/"$"/"@"/"&")
 
 expresiones  =  id:identificador { /*usos.push(id)*/ }
-                / lit:literales "i"? {return lit;}
+                / lit:literales "i"? { return new nLiterales(lit); }
                 / "(" _ opciones _ ")"
                 / corchetes "i"? /**/
                 / "."
@@ -105,8 +112,8 @@ corchete
 texto
     = [^\[\]]+ { /**/}
 
-literales = '"' stringDobleComilla* '"' { return new nLiterales(); }
-            / "'" stringSimpleComilla* "'"{ return new nLiterales(); }
+literales = '"' str:$stringDobleComilla* '"' { return str; }
+            / "'" str:$stringSimpleComilla* "'"{ return str; }
 
 stringDobleComilla = !('"' / "\\" / finLinea) . {}
                     / "\\" escape {}
@@ -139,7 +146,7 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* { return new nIdentificador();/*return text()*/ } 
+identificador = [_a-z]i[_a-z0-9]i* { /*return text()*/ } 
 
 
 

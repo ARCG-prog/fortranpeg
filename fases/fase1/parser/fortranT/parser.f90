@@ -33,23 +33,14 @@ module tokenizer
             return
         end if
         
-		!analisis de aBc *
-        vecesAnalizado=cursor
-        do while (analizar) 
-        !analisis de aBc
-            if (vecesAnalizado<=len(input)) then
-                vecesAnalizado=vecesAnalizado+1!length(aBc)
-            else if(vecesAnalizado==cursor) then
-                analizar = .false.
-            else
-                analizar = .false.
-                allocate( character(len=1) :: lexeme)
-                lexeme = input(cursor:vecesAnalizado)
-                cursor = vecesAnalizado
-                vecesAnalizado=0
-                return
-            end if
-        end do
+		! analisis de . *,+
+        if(cursor<=len(input)) then
+            allocate( character(len=len(input)-cursor+1) :: lexeme )
+            lexeme= input(cursor:len(input))
+            cursor = len(input)+1
+            return
+        end if		
+
         
         print *, "error lexico en col ", cursor, ', "'//input(cursor:cursor)//'"'
         lexeme = "ERROR"
@@ -62,11 +53,11 @@ program parser
     use tokenizer
     implicit none
 
-    character(len=*), parameter :: input = "abCaBCxd"
+    character(len=*), parameter :: input = "abcjklf"
     character(len=:), allocatable :: lexeme
     integer :: cursor
 
-    cursor = 1
+    cursor = 3
     do while (lexeme /= "EOF" .and. lexeme /= "ERROR")
         lexeme = nextSym(input, cursor)
         print *, lexeme

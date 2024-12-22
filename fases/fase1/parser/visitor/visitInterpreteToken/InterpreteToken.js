@@ -1,7 +1,7 @@
 import { Visitor } from "./Visitor.js";
 import { analizarLiterales,analizarLiteralesLower } from "../textoFunciones/funcFortran.js";
-import {nLiterales,nUnion,nOpciones,nPunto,nExpresion } from "../Nodo.js";
-import { tipoLiteral,NodoTipo,tipoTokenaizer,tipoPunto,tipoCuantificador} from "../textoFunciones/NodoTipo.js";
+import { nLiterales, nUnion, nOpciones, nPunto, nExpresion, nIdentificador } from "../Nodo.js";
+import { tipoLiteral, NodoTipo, tipoConcatenacion, tipoPunto, tipoCuantificador, tipoCuantificadorPunto, tipoCuantificadorLiteral} from "../textoFunciones/NodoTipo.js";
 
 
 export default class InterpreteToken extends Visitor {
@@ -18,28 +18,28 @@ export default class InterpreteToken extends Visitor {
 
 
     //codigo que si se utilizara
-    /**  @param {nLiterales} nLiterales  @returns {}*/
+    /**  @param {nLiterales} nLiterales*/
     visitNLiterales(nLiterales) {
         let literal = new tipoLiteral();
         literal.setAll(nLiterales.str, nLiterales.i);
         return literal;
     }
 
-    /**  @param {nUnion} nUnion  @returns {}*/
+    /**  @param {nUnion} nUnion*/
     visitNUnion(nUnion) {
         const resultado = [].concat(...nUnion.exp.map(element => element.accept(this)));
         return resultado;
     }
 
-    /**  @param {nOpciones} nOpciones  @returns {}*/
+    /**  @param {nOpciones} nOpciones*/
     visitNOpciones(nOpciones){
         const resultado = [].concat(...nOpciones.union.map(element => element.accept(this)));
         return resultado;
     }
 
-    /**  @param {nProducciones} nProducciones  @returns {}*/
+    /**  @param {nProducciones} nProducciones*/
     visitNProducciones(nProducciones) {
-        let res = new tipoTokenaizer();
+        let res = new tipoConcatenacion();
         let nodosTipo= nProducciones.opciones.accept(this);
         nodosTipo.forEach(element => {
             res.str +=element.escribir();
@@ -47,7 +47,7 @@ export default class InterpreteToken extends Visitor {
         return [res];
     }
     
-    /**  @param {nIdentificador} nIdentificador  @returns {}*/
+    /**  @param {nIdentificador} nIdentificador*/
     visitNIdentificador(nIdentificador) {
         if (nIdentificador.nodoId != null)
             return nIdentificador.nodoId.accept(this);
@@ -55,11 +55,17 @@ export default class InterpreteToken extends Visitor {
             return null;
     }
 
-    /**  @param {nExpresion} nExpresion  @returns {}*/
+    /**  @param {nExpresion} nExpresion*/
     visitNExpresion(nExpresion) {
-        debugger;
-        if(nExpresion.veces!=null){
-            let  cuantificador=new tipoCuantificador();
+        if(nExpresion.veces!=null){//si viene un cuantificador
+            /** @type {tipoCuantificador|null}*/
+            debugger;
+            let cuantificador = null;
+            if(nExpresion.exp instanceof nLiterales)
+                cuantificador = new tipoCuantificadorLiteral();
+            else if(nExpresion.exp instanceof nPunto)
+                cuantificador = new tipoCuantificadorPunto();
+            //BUG: falta un else
             cuantificador.setTipo(nExpresion.exp.accept(this), nExpresion.veces);
             return cuantificador;
         }
@@ -67,7 +73,7 @@ export default class InterpreteToken extends Visitor {
         return nExpresion.exp.accept(this);
     }
 
-    /**  @param {nPunto} nPunto  @returns {}*/
+    /**  @param {nPunto} nPunto*/
     visitNPunto(nPunto) {
         let punto = new tipoPunto();
         punto.setI(nPunto.negacion);

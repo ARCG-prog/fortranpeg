@@ -5,7 +5,8 @@ import { ErrorReglas } from './parser/error.js';
 
 //importaciones
 import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteToken.js';
-import { tokenizer } from './parser/visitor/textoFunciones/funcFortran.js';
+import { tipoTokenaizer } from './parser/visitor/textoFunciones/NodoTipo.js';
+import { Nodo } from './parser/visitor/Nodo.js';
 //end importaciones
 //mis funciones
 // Función para crear y descargar un archivo
@@ -68,13 +69,13 @@ const analizar = () => {
     let textoFortran=" ";
 
     //try {
+        /** @type {Nodo}*/
         const nodo = parse(entrada)
         let interprete1 = new InterpreteToken();
-        textoFortran = nodo.accept(interprete1)[0].escribir();
-        /*nodo.accept(interprete1).forEach(element => {
-            textoFortran = element.escribir();
-        });;*/
-        debugger
+
+        let tokenizer = new tipoTokenaizer();
+        tokenizer.setNodo(nodo.accept(interprete1)[0]);//primero ejecuto vistor, luego obtengo NodoTipo que esta en un array de NodoTipo con solo un elemento
+        textoFortran = tokenizer.escribir();
         // Uso de la función
         //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');
         btn_descargar.addEventListener('click', () => {

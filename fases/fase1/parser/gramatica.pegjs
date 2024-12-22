@@ -14,9 +14,13 @@
 }}
 
 gramatica = _ pr:producciones+ _ {
-    for(let i=0;i<pr.length;i++){
-        if(idIdentificadores.has(pr[i].id)){
-            idIdentificadores.get(pr[i].id).setNodoId(pr[i]);
+    debugger;
+    for(let i=0;i<pr.length;i++){//recorrer las producciones gramaticales y verificar si hay identificadores iguales
+        if(idIdentificadores.has(pr[i].id)){//si ya existe el identificador,entonces se agrega a la lista para poder hacer saltos en el nodo
+            let lista=idIdentificadores.get(pr[i].id);
+            for(let j=0;j<lista.length;j++){
+                lista[j].setNodoId(pr[i]);
+            }
         }
     }
     return pr[0];
@@ -48,11 +52,12 @@ union = expa:expresion union:(_ @expresion !(_ literales? _ "=" ) )* {
 
 expresion = ("@")? _ id:(identificador _ ":")?_ vari:varios? _ exp:expresiones _ veces:([?+*]/conteo)? {
     /*console.log(JSON.stringify(exp));*/
-    if(exp instanceof nIdentificador)
-        idIdentificadores.set(exp.id,exp);
-        /*if(exp.id=="b"){
-            let a=0;
-        }*/
+    if (exp instanceof nIdentificador) {//si es un identificador, se agrega a la lista para luego poder asignar saltos hasta la produccion gramatica
+      if (idIdentificadores.has(exp.id))//si ya existe el identificador,entonces se agrega a la lista
+        idIdentificadores.get(exp.id).push(exp);
+      else//si no existe, se crea una nueva lista
+        idIdentificadores.set(exp.id,[exp]);
+    }
     else if(exp instanceof nPunto && vari!=null && vari=="!")
         exp.setNegacion(true);
         

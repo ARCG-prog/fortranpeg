@@ -15,13 +15,14 @@ export class  NodoTipo {
     }
 }
 
+
 /** @fileoverview Clase tipoLiteral que hereda de NodoTipo y permite escribir en lenguaje Fortran, la lógica para analizar un literal "cadena"*/
 export class tipoLiteral extends NodoTipo {
     constructor(){
         super();
-        /** @type {boolean} */this.i=false;
-        /** @type {string} */this.strCursor = "cursor";
-        /** @type {string} */this.strCondicion = `
+        this.i=false;
+        this.strCursor = "cursor";
+        this.strCondicion = `
             allocate( character(len=${this.str.length}) :: lexeme)
             lexeme = input(cursor:cursor + ${this.str.length - 1})
             cursor = cursor + ${this.str.length}
@@ -51,30 +52,44 @@ export class tipoLiteral extends NodoTipo {
       `
     }
 }
-
-//FIXME: a un no ha sido implementado
 export class tipoPatron extends NodoTipo {
     constructor(){
         super();
-        this.i=false;
-    }
-    escribir() {
-        let op = this.i ? `if(findloc(["a","b","c"],to_lowercase(input(cursor:cursor)),1)>0) then` : `if(findloc(["a","b","c"],input(cursor:cursor),1)>0) then`;
-        //if(findloc(["a","b","c"],input(cursor:cursor),1)>0) then
-        return `
-        ${op}
-            lexeme=input(cursor:cursor)
+        /*this.i=false;this.i=false;
+        this.strRango="";
+        this.strCursor = "cursor";
+        this.strCondicion = `
+            allocate( character(len=1) :: lexeme )
+            lexeme = input(cursor:cursor)
             cursor = cursor + 1
             return
+        `;*/
+    }
+    /** @param {string} str @param {boolean} i*/
+    setAll(str,strRango,i){
+        /*this.str = str;
+        this.strRango = strRango;
+        this.i = i;*/
+    }
+    escribir() {
+        /*let op ="";
+        if(this.i)
+            op = `if(rango("${str.toLowerCase()}","${this.strRango.toLowerCase()}",to_lowercase(input(${this.strCursor}:${this.strCursor})))) then`;
+        else
+            op = `if(rango("${str}","${this.strRango}",input(${this.strCursor}:${this.strCursor}))) then`;
+        
+        return `
+        !analisis de ${this.str} ${this.strRango}
+        ${op + this.strCondicion}
         end if
-        `
+        `*/
+        return "";
     }
 }
-
 export class tipoPunto extends NodoTipo {
     constructor(){
         super();
-        /** @type {boolean} */this.negacion=false;
+        this.negacion=false;
         this.strAsigMemoria = "1";
         this.strCursor = "cursor";
         this.strSumaCursor = "cursor + 1";
@@ -113,11 +128,13 @@ export class tipoPunto extends NodoTipo {
       `
     }
 }
+
+
 export class tipoCuantificador extends NodoTipo {
     constructor(){
         super();
         /** @type {NodoTipo|null} */this.nodo=null;
-        /** @type {string} */this.tipo="";
+        this.tipo="";
     }
     /** @param {NodoTipo} nodo @param {string} tipo*/
     setTipo(nodo,tipo){
@@ -128,7 +145,6 @@ export class tipoCuantificador extends NodoTipo {
         throw new Error("Método 'escribir' debe ser implementado.");
     }
 }
-
 export class tipoCuantificadorLiteral extends tipoCuantificador {
     constructor(){
         super();
@@ -172,10 +188,10 @@ export class tipoCuantificadorLiteral extends tipoCuantificador {
         do while (analizar)
             ${this.nodo.escribir()}
         end do
+        analizar = .true.
         `;
     }
 }
-
 export class tipoCuantificadorPunto extends tipoCuantificador {
     constructor(){
         super();
@@ -195,6 +211,7 @@ export class tipoCuantificadorPunto extends tipoCuantificador {
         return this.nodo.escribir();
     }
 }
+
 
 export class tipoConcatenacion extends NodoTipo {
     constructor(){
@@ -261,4 +278,8 @@ end module tokenizer
 }
 
 
-export default { NodoTipo, tipoLiteral, tipoPatron, tipoPunto, tipoCuantificador, tipoCuantificadorPunto, tipoCuantificadorLiteral, tipoTokenaizer, tipoConcatenacion };
+export default { NodoTipo, 
+    tipoLiteral, tipoPatron, tipoPunto, 
+    tipoCuantificador, tipoCuantificadorLiteral, tipoCuantificadorPunto, 
+     tipoTokenaizer, 
+    tipoConcatenacion };

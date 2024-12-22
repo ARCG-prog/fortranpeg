@@ -9,7 +9,7 @@
     import { errores } from '../index.js'
     let idIdentificadores=new Map();
     
-    import { nLiterales,nUnion,nOpciones,nProducciones,nIdentificador,nExpresion,nPunto
+    import { nLiterales,nUnion,nOpciones,nProducciones,nIdentificador,nExpresion,nPunto,nRango
     } from './visitor/Nodo.js';
 }}
 
@@ -94,12 +94,11 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 
 // Regla principal que analiza corchetes con contenido
 corchetes
-    = "[" contenido:(/*rango /*/ contenido)+ "]" {
+    = "[" cont:(/*rango /*/ contenido)+ "]" {
         //return `Entrada válida: [${input}]`;
         /*  
-
             let map = new Map();
-            if !map.has("contenido") {
+            if !map.has("cont") {
                 map.set("corchetes", "funcion corchetes()");
             }
             
@@ -123,7 +122,9 @@ caracter
     
 // Coincide con cualquier contenido que no incluya "]"
 contenido
-    = (/*corchete /*/ texto)+
+    = //(/*corchete /*/ texto)+
+    val:$([^[\]-] "-" [^[\]-]) { return [val,"r"]; } //rango 0-9
+    / val:$([^[\]]+) { return val; [val,"s"]; } //str abc
 
 corchete
     = "[" contenido "]"

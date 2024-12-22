@@ -30,5 +30,8 @@ export class Visitor {
     visitNPunto(nProduccion) {
         throw new Error("Método 'visitNPunto' debe ser implementado.");
     }
+    visitNRango(nRango) {
+        throw new Error("Método 'visitNRango' debe ser implementado.");
+    }
 }
 

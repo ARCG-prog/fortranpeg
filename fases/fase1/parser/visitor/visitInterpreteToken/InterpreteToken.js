@@ -1,7 +1,6 @@
 import { Visitor } from "./Visitor.js";
-import { analizarLiterales,analizarLiteralesLower } from "../textoFunciones/funcFortran.js";
-import { nLiterales, nUnion, nOpciones, nPunto, nExpresion, nIdentificador } from "../Nodo.js";
-import { tipoLiteral, NodoTipo, tipoConcatenacion, tipoPunto, tipoCuantificador, tipoCuantificadorPunto, tipoCuantificadorLiteral} from "../textoFunciones/NodoTipo.js";
+import { nLiterales, nUnion, nOpciones, nProducciones, nIdentificador, nExpresion, nPunto, nRango } from "../Nodo.js";
+import { tipoLiteral, NodoTipo, tipoConcatenacion, tipoPunto, tipoCuantificador, tipoCuantificadorPunto, tipoCuantificadorLiteral, tipoPatron } from "../textoFunciones/NodoTipo.js";
 
 
 export default class InterpreteToken extends Visitor {
@@ -57,15 +56,14 @@ export default class InterpreteToken extends Visitor {
 
     /**  @param {nExpresion} nExpresion*/
     visitNExpresion(nExpresion) {
-        if(nExpresion.veces!=null){//si viene un cuantificador
+        if(nExpresion.veces!=null && (nExpresion.exp instanceof nLiterales || nExpresion.exp instanceof nPunto)){//si viene un cuantificador
             /** @type {tipoCuantificador|null}*/
             debugger;
             let cuantificador = null;
             if(nExpresion.exp instanceof nLiterales)
                 cuantificador = new tipoCuantificadorLiteral();
-            else if(nExpresion.exp instanceof nPunto)
+            else//else if(nExpresion.exp instanceof nPunto)
                 cuantificador = new tipoCuantificadorPunto();
-            //BUG: falta un else
             cuantificador.setTipo(nExpresion.exp.accept(this), nExpresion.veces);
             return cuantificador;
         }
@@ -78,5 +76,17 @@ export default class InterpreteToken extends Visitor {
         let punto = new tipoPunto();
         punto.setI(nPunto.negacion);
         return punto;
+    }
+
+    /**  @param {nRango} nRango*/
+    visitNRango(nRango) {
+        debugger;
+        /*let patron = new tipoPatron();
+
+        const res1 = nRango.aStr.join("");
+        const res2 = nRango.bStr.map(str => str.replace("-", "")).join("");*/
+        //patron.setAll(nRango.str, nRango.i);
+
+        return new NodoTipo();
     }
 }

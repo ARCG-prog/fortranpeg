@@ -113,7 +113,19 @@ export class nPunto extends Nodo {
     }
 }
 
+export class nRango extends Nodo {
+    constructor(aStr,bStr,negacion) {
+        super();
+        this.aStr = aStr;
+        this.bStr = bStr;
+        this.negacion = negacion;
+    }
+    accept(visitor) {
+        return visitor.visitNRango(this);
+    }
+}
+
 //se debe exportar todos los nodos
 export default { NodoU, NodoD,
-    nLiterales, nUnion, nProducciones, nIdentificador, nExpresion, nOpciones,nPunto
+    nLiterales, nUnion, nProducciones, nIdentificador, nExpresion, nOpciones, nPunto, nRango
 };

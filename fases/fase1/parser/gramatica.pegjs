@@ -7,51 +7,72 @@
     import { ids, usos} from '../index.js'
     import { ErrorReglas } from './error.js';
     import { errores } from '../index.js'
-
-
-    import { nLiterales, 
-        nIdentificador,
-        nProducciones,
-        nGramatica
+    let idIdentificadores=new Map();
+    
+    import { nLiterales,nUnion,nOpciones,nProducciones,nIdentificador,nExpresion,nPunto
     } from './visitor/Nodo.js';
 }}
 
 gramatica = _ pr:producciones+ _ {
-    return new nGramatica(pr);
+    for(let i=0;i<pr.length;i++){
+        if(idIdentificadores.has(pr[i].id)){
+            idIdentificadores.get(pr[i].id).setNodoId(pr[i]);
+        }
+    }
+    return pr[0];
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
     }
-
     // Validar que todos los usos están en ids
     let noEncontrados = usos.filter(item => !ids.includes(item));
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
     }*/
 }
+/*
+    _    "whitespace" = [ \t\n\r]*
+    Integer  "integer" = [0-9]+
+*/
+producciones = _ id:identificador _ alias:(literales)? _ "=" _ op:opciones (_";")? { 
+        return new nProducciones(id,alias,op);
+}
 
-producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
-        return new nProducciones(id, op);
-    }
+opciones = una:union op:(_ "/" _ @union)* {
+    return new nOpciones([una,...op]);
+}
 
-opciones = una:union op:(_ "/" _ unb:union {return unb;})* {
-        return op.reduce((acc, curr) => acc + "<>" + curr, una); //una=inicio
-    }
+union = expa:expresion union:(_ @expresion !(_ literales? _ "=" ) )* {
+    return new nUnion([expa,...union]);
+}
 
-union = expa:expresion (_ expresion !(_ literales? _ "=") )* {return expa;}
+expresion = ("@")? _ id:(identificador _ ":")?_ vari:varios? _ exp:expresiones _ veces:([?+*]/conteo)? {
+    /*console.log(JSON.stringify(exp));*/
+    if(exp instanceof nIdentificador)
+        idIdentificadores.set(exp.id,exp);
+        /*if(exp.id=="b"){
+            let a=0;
+        }*/
+    else if(exp instanceof nPunto && vari!=null && vari=="!")
+        exp.setNegacion(true);
+        
+    return new nExpresion(id,exp,veces);
+}
 
-expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {return exp;}
+/*etiqueta = ("@")? _ id:identificador _ ":" (varios)?*/
 
-etiqueta = ("@")? _ id:identificador _ ":" (varios)?
+varios = @("!"/"$"/"@"/"&")
 
-varios = ("!"/"$"/"@"/"&")
-
-expresiones  =  id:identificador { /*usos.push(id)*/ }
-                / lit:literales "i"? {return lit;}
-                / "(" _ opciones _ ")"
-                / corchetes "i"? /**/
-                / "."
-                / "!."
+expresiones  =  id:identificador { 
+                                    usos.push(id); 
+                                    let iden = new nIdentificador(id);
+                                    return iden; 
+                                }
+                / lit:literales i:"i"? { return new nLiterales(lit,i?true:false); }
+                / "(" _ @opciones _ ")" 
+                / corchetes "i"? /**/ {}
+                / "." {return new nPunto(false); }
+                / "!." {return new nPunto(true); }
 
 // conteo = "|" parteconteo _ (_ delimitador )? _ "|"
 
@@ -105,16 +126,14 @@ corchete
 texto
     = [^\[\]]+ { /**/}
 
-literales = '"' stringDobleComilla* '"' { return new nLiterales(); }
-            / "'" stringSimpleComilla* "'"{ return new nLiterales(); }
+literales = '"' str:$stringDobleComilla* '"' { return str; }
+            / "'" str:$stringSimpleComilla* "'"{ return str; }
 
-stringDobleComilla = !('"' / "\\" / finLinea) . {}
-                    / "\\" escape {}
-                    / continuacionLinea {}
+stringDobleComilla = !('"' / "\\" / finLinea) .
+                    / "\\" escape
 
 stringSimpleComilla = !("'" / "\\" / finLinea) .
                     / "\\" escape
-                    / continuacionLinea
 
 continuacionLinea = "\\" secuenciaFinLinea
 
@@ -139,7 +158,7 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* { return new nIdentificador();/*return text()*/ } 
+identificador = [_a-z]i[_a-z0-9]i* { return text() } 
 
 
 

@@ -32,65 +32,88 @@ export class NodoD extends Nodo {
 }
 
 //nodo que si es para el codigo
-export class nComentario extends Nodo{
-    constructor(){
+export class nLiterales extends Nodo {
+    /**  @param {string} str  @param {boolean} i */
+    constructor(str,i) {
         super();
+        this.str = str;
+        this.i = i;
     }
-    accept(visitor){
-        return visitor.visitnComentario(this);
+    accept(visitor) {
+        return visitor.visitNLiterales(this);
     }
 }
-
-export class nLiterales extends Nodo{
-    constructor(){
+export class nUnion extends Nodo {
+    constructor(exp) {
         super();
+        this.exp = exp;
     }
-    accept(visitor){
-        return visitor.visitnLiterales(this);
+    accept(visitor) {
+        return visitor.visitNUnion(this);
     }
 }
-
-export class nIdentificador extends Nodo{
-    constructor(){
+export class nOpciones extends Nodo {
+    constructor(union) {
         super();
+        this.union = union;
     }
-    accept(visitor){
-        return visitor.visitnIdentificador(this);
+    accept(visitor) {
+        return visitor.visitNOpciones(this);
     }
 }
-
-export class nProducciones extends Nodo{
-    constructor(id,op){
+export class nProducciones extends Nodo {
+    constructor(id,alias,opciones) {
         super();
         this.id = id;
-        this.op = op;
+        this.alias = alias;
+        this.opciones = opciones;
     }
-    accept(visitor){
-        return visitor.visitnProducciones(this);
-    }
-}
-
-export class nIgual extends Nodo{
-    constructor(){
-        super();
-    }
-    accept(visitor){
-        return visitor.visitnIgual(this);
+    accept(visitor) {
+        return visitor.visitNProducciones(this);
     }
 }
 
-export class nGramatica extends Nodo{
-    constructor(producciones){
+export class nIdentificador extends Nodo {
+    constructor(id) {
         super();
-        this.producciones = producciones;
+        this.id = id;
+        this.nodoId=null;
     }
-    accept(visitor){
-        return visitor.visitnGramatica(this);
+    setNodoId(nodoId){
+        this.nodoId=nodoId;
+    }
+    accept(visitor) {
+        return visitor.visitNIdentificador(this);
+    }
+}
+
+export class nExpresion extends Nodo {
+    /**  @param {string} id  @param {Nodo} exp  @param {string} veces */
+    constructor(id,exp,veces) {
+        super();
+        /** @type {string}*/this.id = id;
+        /** @type {Nodo}*/this.exp = exp;
+        /** @type {string}*/this.veces = veces;
+    }
+    accept(visitor) {
+        return visitor.visitNExpresion(this);
+    }
+}
+
+export class nPunto extends Nodo {
+    constructor(negacion) {
+        super();
+        this.negacion = negacion;
+    }
+    setNegacion(negacion){
+        this.negacion = negacion;
+    }
+    accept(visitor) {
+        return visitor.visitNPunto(this);
     }
 }
 
 //se debe exportar todos los nodos
-export default { NodoU, NodoD, 
-    nComentario, nLiterales, nIdentificador 
-    , nProducciones, nGramatica
+export default { NodoU, NodoD,
+    nLiterales, nUnion, nProducciones, nIdentificador, nExpresion, nOpciones,nPunto
 };

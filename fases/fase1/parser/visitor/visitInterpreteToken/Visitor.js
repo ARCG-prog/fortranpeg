@@ -1,36 +1,34 @@
 
-export class Visitor{
-    //codigo solo para pruebas
-    visitNodoU(NodoU){
+export class Visitor {
+    // Código solo para pruebas
+    visitNodoU(NodoU) {
         throw new Error("Método 'visitNodoU' debe ser implementado.");
     }
-    visitNodoD(NodoD){
+    visitNodoD(NodoD) {
         throw new Error("Método 'visitNodoD' debe ser implementado.");
     }
 
-    //codigo que si se utilizara
-    visitnComentario(nComentario){
-        throw new Error("Método 'visitnComentario' debe ser implementado.");
+    // Código que sí se utilizará
+    visitNLiterales(nLiterales) {
+        throw new Error("Método 'visitNLiterales' debe ser implementado.");
     }
-
-    visitnLiterales(nLiterales){
-        throw new Error("Método 'visitnLiterales' debe ser implementado.");
+    visitNUnion(nUnion) {
+        throw new Error("Método 'visitNUnion' debe ser implementado.");
     }
-    
-    visitnIdentificador(nIdentificador){
-        throw new Error("Método 'visitnIdentificador' debe ser implementado.");
+    visitNOpciones(nOpciones) {
+        throw new Error("Método 'visitNOpciones' debe ser implementado.");
     }
-
-    visitnProducciones(nProducciones){
-        throw new Error("Método 'visitnProducciones' debe ser implementado.");
+    visitNProducciones(nProducciones) {
+        throw new Error("Método 'visitNProducciones' debe ser implementado.");
     }
-
-    visitnIgual(nIgual){
-        throw new Error("Método 'visitnIgual' debe ser implementado.");
+    visitNIdentificador(nIdentificador) {
+        throw new Error("Método 'visitNIdentificador' debe ser implementado.");
     }
-
-    /**@param {Nodo} nGramatica */
-    visitnGramatica(nGramatica){
-        throw new Error("Método 'visitnGramatica' debe ser implementado.");
+    visitNExpresion(nExpresion) {
+        throw new Error("Método 'visitNExpresion' debe ser implementado.");
+    }
+    visitNPunto(nProduccion) {
+        throw new Error("Método 'visitNPunto' debe ser implementado.");
     }
 }
+

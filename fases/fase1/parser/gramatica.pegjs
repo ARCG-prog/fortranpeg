@@ -9,57 +9,46 @@
     import { errores } from '../index.js'
 
 
-    import { nLiterales,nUnion,nOpciones,nProducciones
+    import { nLiterales, 
+        nIdentificador,
+        nProducciones,
+        nGramatica
     } from './visitor/Nodo.js';
 }}
 
 gramatica = _ pr:producciones+ _ {
-    return pr[0];
+    return new nGramatica(pr);
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
     }
+
     // Validar que todos los usos están en ids
     let noEncontrados = usos.filter(item => !ids.includes(item));
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
     }*/
 }
-/*
-    _    "whitespace" = [ \t\n\r]*
-    Integer  "integer" = [0-9]+
-*/
-producciones = _ id:identificador _ alias:(literales)? _ "=" _ op:opciones (_";")? { 
-        return new nProducciones(id,alias,op);
+
+producciones = _ id:identificador _ (literales)? _ "=" _ op:opciones (_";")? { 
+        return new nProducciones(id, op);
     }
 
-opciones = una:union op:(_ "/" _ @union)* {
-    /*const resultado = [];
-    resultado.push(una);
-    op.forEach(element => { resultado.push(element); }); 
-    return new nOpciones(resultado);*/
-    return new nOpciones([una,...op]);
-}
+opciones = una:union op:(_ "/" _ unb:union {return unb;})* {
+        return op.reduce((acc, curr) => acc + "<>" + curr, una); //una=inicio
+    }
 
-union = expa:expresion union:(_ @expresion !(_ literales? _ "=" ) )* {
-    /*let resultado = [];
-    resultado.push(expa);
-    union.forEach(element => { resultado.push(element); }); 
-    return new nUnion(resultado);*/
-    return new nUnion([expa,...union]);
-}
+union = expa:expresion (_ expresion !(_ literales? _ "=") )* {return expa;}
 
-expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {
-    return exp;
-}
+expresion  = (etiqueta/varios)? _ exp:expresiones _ ([?+*]/conteo)? {return exp;}
 
 etiqueta = ("@")? _ id:identificador _ ":" (varios)?
 
 varios = ("!"/"$"/"@"/"&")
 
 expresiones  =  id:identificador { /*usos.push(id)*/ }
-                / lit:literales i:"i"? { return new nLiterales(lit,i?true:false); }
-                / "(" _ @opciones _ ")" 
+                / lit:literales "i"? {return lit;}
+                / "(" _ opciones _ ")"
                 / corchetes "i"? /**/
                 / "."
                 / "!."
@@ -116,8 +105,8 @@ corchete
 texto
     = [^\[\]]+ { /**/}
 
-literales = '"' str:$stringDobleComilla* '"' { return str; }
-            / "'" str:$stringSimpleComilla* "'"{ return str; }
+literales = '"' stringDobleComilla* '"' { return new nLiterales(); }
+            / "'" stringSimpleComilla* "'"{ return new nLiterales(); }
 
 stringDobleComilla = !('"' / "\\" / finLinea) . {}
                     / "\\" escape {}
@@ -150,7 +139,7 @@ secuenciaFinLinea = "\r\n" / "\n" / "\r" / "\u2028" / "\u2029"
 
 numero = [0-9]+
 
-identificador = [_a-z]i[_a-z0-9]i* { /*return text()*/ } 
+identificador = [_a-z]i[_a-z0-9]i* { return new nIdentificador();/*return text()*/ } 
 
 
 

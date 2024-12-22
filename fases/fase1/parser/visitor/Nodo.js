@@ -32,48 +32,65 @@ export class NodoD extends Nodo {
 }
 
 //nodo que si es para el codigo
-export class nLiterales extends Nodo {
-    /**  @param {string} str  @param {boolean} i */
-    constructor(str,i) {
+export class nComentario extends Nodo{
+    constructor(){
         super();
-        this.str = str;
-        this.i = i;
     }
-    accept(visitor) {
-        return visitor.visitNLiterales(this);
+    accept(visitor){
+        return visitor.visitnComentario(this);
     }
 }
-export class nUnion extends Nodo {
-    constructor(exp) {
+
+export class nLiterales extends Nodo{
+    constructor(){
         super();
-        this.exp = exp;
     }
-    accept(visitor) {
-        return visitor.visitNUnion(this);
+    accept(visitor){
+        return visitor.visitnLiterales(this);
     }
 }
-export class nOpciones extends Nodo {
-    constructor(union) {
+
+export class nIdentificador extends Nodo{
+    constructor(){
         super();
-        this.union = union;
     }
-    accept(visitor) {
-        return visitor.visitNOpciones(this);
+    accept(visitor){
+        return visitor.visitnIdentificador(this);
     }
 }
-export class nProducciones extends Nodo {
-    constructor(id,alias,opciones) {
+
+export class nProducciones extends Nodo{
+    constructor(id,op){
         super();
         this.id = id;
-        this.alias = alias;
-        this.opciones = opciones;
+        this.op = op;
     }
-    accept(visitor) {
-        return visitor.visitNProducciones(this);
+    accept(visitor){
+        return visitor.visitnProducciones(this);
+    }
+}
+
+export class nIgual extends Nodo{
+    constructor(){
+        super();
+    }
+    accept(visitor){
+        return visitor.visitnIgual(this);
+    }
+}
+
+export class nGramatica extends Nodo{
+    constructor(producciones){
+        super();
+        this.producciones = producciones;
+    }
+    accept(visitor){
+        return visitor.visitnGramatica(this);
     }
 }
 
 //se debe exportar todos los nodos
-export default { NodoU, NodoD,
-    nLiterales, nUnion, nProducciones
+export default { NodoU, NodoD, 
+    nComentario, nLiterales, nIdentificador 
+    , nProducciones, nGramatica
 };

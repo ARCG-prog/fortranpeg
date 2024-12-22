@@ -5,7 +5,8 @@ import { ErrorReglas } from './parser/error.js';
 
 //importaciones
 import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteToken.js';
-import { tokenizer } from './parser/visitor/textoFunciones/funcFortran.js';
+import { config } from './parser/varGlobales/global.js';
+import { Lista } from './parser/Lista/Lista.js';
 //end importaciones
 //mis funciones
 // Función para crear y descargar un archivo
@@ -68,13 +69,13 @@ const analizar = () => {
     let textoFortran=" ";
 
     //try {
+        config.variables.gFuncionesCreadas.clear();
         const nodo = parse(entrada)
         let interprete1 = new InterpreteToken();
-        textoFortran = nodo.accept(interprete1)[0].escribir();
-        /*nodo.accept(interprete1).forEach(element => {
-            textoFortran = element.escribir();
-        });;*/
-        debugger
+        debugger;
+        /**@type {Lista}*/let lista=nodo.accept(interprete1);
+        textoFortran=lista.generarTodoElCodigo();
+        
         // Uso de la función
         //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');
         btn_descargar.addEventListener('click', () => {

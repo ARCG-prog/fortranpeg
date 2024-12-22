@@ -1,7 +1,42 @@
+module global_variables
+  implicit none
+  integer :: globalState
 
-export const analizarLiterales = 
-`
-  function analizarLiterales(str,columna) result(res)
+  contains
+  subroutine inicializarEstado()
+    globalState = 0
+  end subroutine inicializarEstado
+end module global_variables
+
+module moduloFuncionesRetorno
+  implicit none
+  type :: clase_return
+    character(len=:), allocatable :: resultado
+    integer :: tipoOpcion
+  end type clase_return
+
+  contains
+  function analizarCadenaAAEjemplo(str, columna) result(res)
+    character(len=*), intent(in) :: str
+    integer, intent(in) :: columna
+    type(clase_return) :: res
+
+    ! Analizar cadenaAA
+    if (str(columna:columna+1) == "aa") then
+      allocate(character(len=2) :: res%resultado)!no se si se necesita el len=2
+      res%resultado = 'aa'
+      res%tipoOpcion = columna + 2!aumnento columna cuando se encuentra aa
+      return
+    else
+      allocate(character(len=1) :: res%resultado)!no se si se necesita el len=2g
+      res%resultado = ' '
+      res%tipoOpcion = -1
+      return
+    end if
+  end function analizarCadenaAAEjemplo
+  
+  !analizar string con, comillas simples o dobles
+  function analizarStringComillas(str,columna) result(res)
     character(len=*), intent(in) :: str
     integer, intent(in) :: columna
     type(clase_return) :: res
@@ -28,7 +63,7 @@ export const analizarLiterales =
           estadosInternos = 1
           ascii = 39
           i=i+1
-
+      
       !estado 1
         else if (estadosInternos==1 .and. str(i:i)==char(92)) then !92= barrainvertida
           estadosInternos=2
@@ -48,7 +83,7 @@ export const analizarLiterales =
         else if (estadosInternos == 2 .and. (str(i:i) == char(92) .or. str(i:i) == "b" .or. str(i:i) == "f" .or. str(i:i) == "n" .or. str(i:i) == "r" .or. str(i:i) == "t" .or. str(i:i) == "v" .or. str(i:i) == "u" .or. str(i:i) == char(ascii))) then
           estadosInternos = 3
           i = i + 1
-
+        
       !estado 3
         else if (estadosInternos==3 .and. str(i:i)==char(92)) then !92= barrainvertida
           estadosInternos=2
@@ -63,7 +98,7 @@ export const analizarLiterales =
         else if (estadosInternos==3 .and. str(i:i)/=char(ascii)) then ! diferente a 34=" o 39='
           estadosInternos = 4
           i=i+1
-
+      
       !estado 4
         else if (estadosInternos==4 .and. str(i:i)==char(92)) then !92= barrainvertida
           estadosInternos=2
@@ -78,7 +113,7 @@ export const analizarLiterales =
         else if (estadosInternos==4 .and. str(i:i)/=char(ascii)) then ! diferente a 34=" o 39='
           estadosInternos = 4
           i=i+1
-
+      
       !estado 5
       else if (estadosInternos==5) then
         bandera = .false.
@@ -88,11 +123,8 @@ export const analizarLiterales =
         bandera = .false.
       end if
     end do
-  end function analizarLiterales
-`
-
-export const analizarIdentificador = 
-`
+  end function analizarStringComillas
+  
   function analizarIdentificador(str, columna) result(res)
     character(len=*), intent(in) :: str
     integer, intent(in) :: columna
@@ -129,30 +161,9 @@ export const analizarIdentificador =
       res%resultado = ' '  ! No se encontró un identificador válido
     end if
   end function analizarIdentificador
-`
 
-/**  @param {number} estado  @param {string} alias  @param {string} funcion  @param {string} error  @param {string} aceptacion  @returns {string} */
-export  function estadosFortran(estado,alias,funcion,error,aceptacion){
-  return `
-    !estado ${estado}
-    else if (globalState == ${estado}) then
-      allocate(character(len=${alias.length+1}) :: alias)
-      alias="${alias}\n"
-      res = ${funcion}
-      if (res%tipoOpcion == -1) then
-        ${error}
-        return
-      else
-        ${aceptacion}
-        deallocate(alias)
-        return
-      end if
-`;
-}
+end module moduloFuncionesRetorno
 
-/**  @param {string} codigoEstados  @returns {string}*/
-export function moduloEstadosFortran(codigoEstados){
-  return `
 module moduloEstados
   use global_variables
   use moduloFuncionesRetorno
@@ -167,7 +178,22 @@ module moduloEstados
     character(len=:), allocatable :: alias
 
     if (globalState==-99) then !solo para utilizar else ifs
-    ${codigoEstados}
+    else if (globalState == 0) then
+      allocate(character(len=1) :: alias)
+      alias=" "
+      res = analizarIdentificador(txt, columna)
+      if (res%tipoOpcion == -1) then
+        res%resultado = alias
+        res%tipoOpcion = -1
+        globalState = globalState + 1!para no ciclo infintio
+        return
+      else
+        res%resultado = res%resultado
+        res%tipoOpcion = res%tipoOpcion
+        globalState = globalState + 1!para no ciclo infintio
+        deallocate(alias)
+        return
+      end if
     else
       res%tipoOpcion = -1
       res%resultado = ''
@@ -175,40 +201,7 @@ module moduloEstados
     end if
   end function estados
 end module moduloEstados
-`
-}
 
-/**  @param {string} funciones  @returns {string}*/
-export function moduloFuncionesRetornoFortran(funciones){
-return `
-module moduloFuncionesRetorno
-  implicit none
-  type :: clase_return
-    character(len=:), allocatable :: resultado
-    integer :: tipoOpcion
-  end type clase_return
-
-  contains
-    ${funciones}
-end module moduloFuncionesRetorno
-`;
-}
-
-
-/**  @param {string} funciones  @param {string} estados  @returns {string}*/
-export function unionFortranFinal(funciones,estados){
-  return `
-module global_variables
-  implicit none
-  integer :: globalState
-
-  contains
-  subroutine inicializarEstado()
-    globalState = 0
-  end subroutine inicializarEstado
-end module global_variables
-  ${estados}
-  ${funciones}
 module fortranModule
   use global_variables
   use moduloEstados
@@ -237,7 +230,26 @@ module fortranModule
     end do
   end subroutine main
 end module fortranModule
-`
-}
 
-export default { analizarLiterales, analizarIdentificador, moduloEstadosFortran, moduloFuncionesRetornoFortran, unionFortranFinal };
+program fortran
+  use fortranModule
+  implicit none
+  character(len=:), allocatable :: txt
+  integer :: tam, columna
+
+  ! Definir el tamaño de la cadena
+  ! tam = len(char(34)//"aa"//char(92)//"nbb"//char(34))
+  ! allocate(character(len=tam) :: txt)
+  ! txt = char(34)//"aa"//char(92)//"nbb"//char(34)
+  
+
+  ! Definir la cadena para probar identificadores
+  txt = "_temp"
+
+  columna = 1
+  ! Llamar a la subrutina principal con los parámetros
+  call main(txt, columna)
+  
+  ! Liberar la memoria
+  deallocate(txt)
+end program fortran

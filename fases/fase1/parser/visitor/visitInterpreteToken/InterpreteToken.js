@@ -1,9 +1,9 @@
 import { Visitor } from "./Visitor.js";
-import { analizarLiterales,analizarLiteralesLower } from "../textoFunciones/funcFortran.js";
-import {nLiterales,nUnion,nOpciones } from "../Nodo.js";
-import { tipoLiteral,NodoTipo,tipoTokenaizer } from "./NodoTipo.js";
-
-
+import { config } from "../../varGlobales/global.js";
+import { analizarLiterales, analizarIdentificador } from "../textoFunciones/funcFortran.js";
+import { NodoL } from "../../Lista/NodoL.js";
+import { Lista } from "../../Lista/Lista.js";
+import { nGramatica, nProducciones, nLiterales } from "../Nodo.js";
 export default class InterpreteToken extends Visitor {
     constructor() {
         super();
@@ -16,38 +16,67 @@ export default class InterpreteToken extends Visitor {
         return `<DOS> ${nodo.str}`;
     }
 
-
     //codigo que si se utilizara
-    /**  @param {nLiterales} nLiterales  @returns {}*/
-    visitNLiterales(nLiterales) {
-        let literal = new tipoLiteral();
-        literal.setAll(nLiterales.str, nLiterales.i);
-        return literal;
-        //return nLiterales.i ? analizarLiteralesLower(nLiterales.str) : analizarLiterales(nLiterales.str);
+    visitnComentario(nComentario){
+        return `<COMENTARIO> ${nComentario.str}`;
     }
 
-    /**  @param {nUnion} nUnion  @returns {}*/
-    visitNUnion(nUnion) {
-        debugger;
-        const resultado = [].concat(...nUnion.exp.map(element => element.accept(this)));
-        return resultado;
+    /**@param {nLiterales} nLiterales @returns {Lista}*/
+    visitnLiterales(nLiterales) {
+        if (!config.variables.gFuncionesCreadas.has("analizarLiterales")){
+            config.variables.gFuncionesCreadas.set("analizarLiterales", analizarLiterales);
+        }
+        let nodoL= new NodoL();
+        let lista = new Lista();
+        nodoL.setCodigoFuncion(`analizarLiterales(txt, columna)`)
+        lista.addUltimo(nodoL);
+        return lista;
     }
 
-    /**  @param {nOpciones} nOpciones  @returns {}*/
-    visitNOpciones(nOpciones){
-        const resultado = [].concat(...nOpciones.union.map(element => element.accept(this)));
-        return resultado;
+    /**@param {nIdentificador} nIdentificador @returns {Lista} */
+    visitnIdentificador(nIdentificador) {
+        if (!config.variables.gFuncionesCreadas.has("analizarIdentificador")){
+            config.variables.gFuncionesCreadas.set("analizarIdentificador", analizarIdentificador);
+        }
+        let lista = new Lista();
+        let nodoL = new NodoL();
+        nodoL.setCodigoFuncion(`analizarIdentificador(txt, columna)`);
+        lista.addUltimo(nodoL);
+        return lista;
     }
 
-    /**  @param {nProducciones} nProducciones  @returns {}*/
-    visitNProducciones(nProducciones) {
-        //return `module ${nProducciones.id}`;
-        let res = new tipoTokenaizer();
-        debugger;
-        let nodosTipo= nProducciones.opciones.accept(this);
-        nodosTipo.forEach(element => {
-            res.str +=element.escribir();
-        });
-        return [res];
+    /** @param {nProducciones} nProducciones  @returns {Lista}*/
+    visitnProducciones(nProducciones) {
+        let nodoL= new NodoL();
+        //let lista = new Lista();
+        /** @type {Lista}*/let listaId= nProducciones.id.accept(this);
+        /** @type {Lista}*/let listaOp= nProducciones.op.accept(this);
+        listaId.unirListaInicioFinal(listaId,listaOp);
+        listaId.modificarSaltoFortran(listaId.ultimo.anterior,
+            `
+            res%resultado = alias
+            res%tipoOpcion = -1
+            `,
+            `
+            res%resultado = res%resultado !se guarda el resultado del texto
+            res%tipoOpcion = res%tipoOpcion !se cambia ha las columnas que se avanzo
+            globalState = globalState + 1
+            `);
+        return listaId;
+    }
+
+    visitnIgual(nIgual) {
+        return new Lista();
+    }
+
+    /**@param {nGramatica} nGramatica @returns {Lista} */
+    visitnGramatica(nGramatica) {
+        /**@type {Lista|null}*/let lista=null
+        for (const nodo of nGramatica.producciones) {
+            /** @type {Lista} */
+            lista=nodo.accept(this);
+            debugger;
+        }
+        return lista;
     }
 }

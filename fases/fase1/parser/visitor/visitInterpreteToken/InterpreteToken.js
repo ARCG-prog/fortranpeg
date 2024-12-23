@@ -25,7 +25,7 @@ export default class InterpreteToken extends Visitor {
         /** @type {NodoTipo|null} */
         let literalaux=null;
         literal.setStr(nLiterales.str);
-        if(nLiterales.i){
+        if(nLiterales.i){//si biene i, quiere decir que es "ab"i asignar a literalaux para no hacer concatenacion
             literalaux = new tipoI();
             literalaux.setNodo(literal);
         }else
@@ -99,7 +99,7 @@ export default class InterpreteToken extends Visitor {
     visitNProducciones(nProducciones) {
         let res = new tipoFusion();
         let nodosTipo= nProducciones.opciones.accept(this);
-        nodosTipo.forEach(element => {
+        nodosTipo.forEach(element => {//fusionar todos los nodos tipo en una concatenacion de cadenas para luego fusionarlos en un solo nodo tipo
             res.str +=element.escribir();
         });
         return [res];
@@ -110,12 +110,12 @@ export default class InterpreteToken extends Visitor {
         if (nIdentificador.nodoId != null)
             return nIdentificador.nodoId.accept(this);
         else
-            return null;
+            throw new Error("Error en la produccion: " + nIdentificador.id);
     }
 
     /**  @param {nExpresion} nExpresion*/
     visitNExpresion(nExpresion) {
-        if(nExpresion.veces!=null){//si viene un cuantificador
+        if(nExpresion.veces!=null){//si viene un cuantificador entonces se crea un nodo tipo cuantificador en lo casos de nliterales y npunto
             /** @type {NodoTipo|null}*/
             let cuantificador = null;
             if(nExpresion.exp instanceof nLiterales){//si es un literal

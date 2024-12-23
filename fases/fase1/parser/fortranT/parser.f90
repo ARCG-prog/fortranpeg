@@ -14,6 +14,27 @@ module tokenizer
             end if
         end do
     end function to_lowercase
+    function rango(strCaracteres,strRangos,charComparacion) result(match)
+        character(len=*), intent(in) :: strCaracteres
+        character(len=*), intent(in) :: strRangos
+        character(len=1), intent(in) :: charComparacion
+        logical :: match
+        integer :: i
+        
+        do i=1, len(strCaracteres)
+            if (charComparacion == strCaracteres(i:i)) then
+                match = .true.
+                return
+            end if
+        end do
+        do i=1, len(strRangos), 2
+            if (charComparacion >= strRangos(i:i) .and. charComparacion <= strRangos(i+1:i+1)) then
+                match = .true.
+                return
+            end if
+        end do
+        match = .false.
+    end function rango
 
     function nextSym(input, cursor) result(lexeme)
         character(len=*), intent(in) :: input
@@ -32,13 +53,12 @@ module tokenizer
             return
         end if
         
-        !analisis de abc
-        if ("abc" == input(cursor:cursor + 2)) then
-            allocate( character(len=0) :: lexeme)
-            lexeme = input(cursor:cursor + -1)
-            cursor = cursor + 0
+        !analisis de ab
+	    if ("ab" == input(cursor:cursor + 1)) then
+            allocate( character(len=2) :: lexeme)
+            lexeme = input(cursor:cursor + 1)
+            cursor = cursor + 2
             return
-        
         end if
       
         print *, "error lexico en col ", cursor, ', "'//input(cursor:cursor)//'"'

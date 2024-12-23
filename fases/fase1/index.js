@@ -3,9 +3,33 @@ import { parse } from './parser/gramatica.js';
 import { ErrorReglas } from './parser/error.js';
 
 
+//importaciones
+import InterpreteToken from './parser/visitor/visitInterpreteToken/InterpreteToken.js';
+import { tipoTokenaizer } from './parser/visitor/textoFunciones/NodoTipo.js';
+import { Nodo } from './parser/visitor/Nodo.js';
+//end importaciones
+//mis funciones
+// Función para crear y descargar un archivo
+function descargarArchivo(contenido, nombreArchivo, tipoContenido) {
+    const a = document.createElement('a');
+    const archivo = new Blob([contenido], { type: tipoContenido });
+    a.href = URL.createObjectURL(archivo);
+    a.download = nombreArchivo;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+}
+//fin mis funciones
+//mis variables
+    //crear un boton
+const btn_analizar = document.getElementById('btn_analizar');
+const btn_descargar = document.getElementById('btn_descargar');
+//fin mis variables
+
 export let ids = []
 export let usos = []
 export let errores = []
+
 
 
 // Crear el editor principal
@@ -30,14 +54,33 @@ const salida = monaco.editor.create(
 
 let decorations = [];
 
+
 // Analizar contenido del editor
 const analizar = () => {
+    //console.log(runVisitor());
+
     const entrada = editor.getValue();
+
+   
+
     ids.length = 0
     usos.length = 0
     errores.length = 0
-    try {
-        const cst = parse(entrada)
+    let textoFortran=" ";
+
+    //try {
+        /** @type {Nodo}*/
+        const nodo = parse(entrada)
+        let interprete1 = new InterpreteToken();
+
+        let tokenizer = new tipoTokenaizer();
+        tokenizer.setNodo(nodo.accept(interprete1)[0]);//primero ejecuto vistor, luego obtengo NodoTipo que esta en un array de NodoTipo con solo un elemento
+        textoFortran = tokenizer.escribir();
+
+        btn_descargar.addEventListener('click', () => {
+            descargarArchivo(textoFortran, 'entrada.f90', 'text/plain');
+        });
+
 
         if(errores.length > 0){
             salida.setValue(
@@ -51,7 +94,7 @@ const analizar = () => {
         // salida.setValue("Análisis Exitoso");
         // Limpiar decoraciones previas si la validación es exitosa
         decorations = editor.deltaDecorations(decorations, []);
-    } catch (e) {
+    /*} catch (e) {
 
         if(e.location === undefined){
             
@@ -95,13 +138,19 @@ const analizar = () => {
             ]);
         }
         
-    }
+    }*/
 };
 
 // Escuchar cambios en el contenido del editor
-editor.onDidChangeModelContent(() => {
+/*editor.onDidChangeModelContent(() => {
     analizar();
+});*/
+btn_analizar.addEventListener('click', ()=>{
+    analizar();
+    //console.log(JSON.stringify(tokenizer));
 });
+
+
 
 // CSS personalizado para resaltar el error y agregar un warning
 const style = document.createElement('style');

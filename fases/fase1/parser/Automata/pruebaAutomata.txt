@@ -1,0 +1,68 @@
+program AutomataValidator
+  implicit none
+  character(len=100) :: inputString
+  integer :: currentState, i
+  logical :: isAccepted
+  logical :: continueLoop  ! Variable de control para el ciclo
+
+  print *, 'Enter a string to validate:'
+  read(*,*) inputString
+
+  currentState = 2
+  isAccepted = .false.
+  continueLoop = .true.  ! Inicializamos la variable de control
+
+  do i = 1, len_trim(inputString)
+    if (.not. continueLoop) exit  ! Salir del ciclo si continueLoop es falso
+
+    select case(currentState)
+      case (0)
+        if (inputString(i:i) == 'a') then 
+            currentState = 1
+            isAccepted = .true.
+        else if (inputString(i:i) == 'c' .or. inputString(i:i) == 'd') then 
+            currentState = 0
+            isAccepted = .true.
+        else
+          isAccepted = .false.
+          continueLoop = .false.  ! Cambiamos la variable de control
+        end if
+		
+        ! cuando un estado de aceptacion no tiene mas caracteres al cual ir validar despues de los caracteres
+        if ( (i) == len_trim(inputString)) then
+            isAccepted = .true.
+            continueLoop = .false.
+        else
+            isAccepted = .false.
+        end if
+
+      case (1)
+        ! cuando un estado de aceptacion no tiene mas caracteres al cual y es de aceptacion validar esto con i-1
+        if ( i  - 1 < len_trim(inputString)) then
+            isAccepted = .false.
+            continueLoop = .false.
+        else
+            isAccepted = .true.
+        end if
+
+      case (2)
+        if (inputString(i:i) == 'a' .or. inputString(i:i) == 'b' .or. inputString(i:i) == 'c') then 
+            currentState = 0
+            isAccepted = .true.
+        else
+          isAccepted = .false.
+          continueLoop = .false.  ! Cambiamos la variable de control
+        end if
+
+      case default
+        print *, 'Error: Invalid state or transition.'
+        continueLoop = .false.  ! Cambiamos la variable de control
+    end select
+  end do
+
+  if (isAccepted) then
+    print *, 'The string is accepted.'
+  else
+    print *, 'The string is rejected.'
+  end if
+end program AutomataValidator

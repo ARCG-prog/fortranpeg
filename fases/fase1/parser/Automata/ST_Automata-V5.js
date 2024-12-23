@@ -464,7 +464,7 @@ export function generateFortranCode(automaton) {
                     if (contador == cantidadTrans){
                         fortranCode += `
                     else
-                        isAccepted = .false.
+                        !isAccepted = .false.
                         continueLoop = .false.  ! Cambiamos la variable de control
                     end if
                         `;
@@ -526,8 +526,14 @@ export function generateFortranCode(automaton) {
 
         if (isAccepted) then
             !print *, 'The string is accepted.'
-            lexeme=${inputString}(${cursor}:vecesAnalizado)
-            cursor = vecesAnalizado
+            if(vecesAnalizado-2==0) then
+                lexeme=${inputString}(${cursor}:vecesAnalizado-1)
+                cursor = vecesAnalizado
+            else
+                lexeme=${inputString}(${cursor}:vecesAnalizado-2)
+                cursor = vecesAnalizado -1
+            end if
+
             vecesAnalizado = 0
             return
         else

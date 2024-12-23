@@ -123,7 +123,17 @@ export class nRango extends Nodo {
     }
 }
 
+export class nGramatica extends Nodo {
+    constructor(producciones) {
+        super();
+        this.producciones = producciones;
+    }
+    accept(visitor) {
+        return visitor.visitNGramatica(this);
+    }
+}
+
 //se debe exportar todos los nodos
 export default { NodoU, NodoD,
-    nLiterales, nUnion, nProducciones, nIdentificador, nExpresion, nOpciones, nPunto, nRango
+    nLiterales, nUnion, nProducciones, nIdentificador, nExpresion, nOpciones, nPunto, nRango, nGramatica
 };

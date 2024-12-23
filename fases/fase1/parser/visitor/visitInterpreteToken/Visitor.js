@@ -33,5 +33,8 @@ export class Visitor {
     visitNRango(nRango) {
         throw new Error("Método 'visitNRango' debe ser implementado.");
     }
+    visitNGramatica(nGramatica) {
+        throw new Error("Método 'visitNGramatica' debe ser implementado.");
+    }
 }
 

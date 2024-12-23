@@ -9,7 +9,7 @@
     import { errores } from '../index.js'
     let idIdentificadores=new Map();
     
-    import { nLiterales,nUnion,nOpciones,nProducciones,nIdentificador,nExpresion,nPunto,nRango
+    import { nLiterales,nUnion,nOpciones,nProducciones,nIdentificador,nExpresion,nPunto,nRango,nGramatica
     } from './visitor/Nodo.js';
 
 function peg$subclass(child, parent) {
@@ -264,8 +264,7 @@ function peg$parse(input, options) {
 
   var peg$f0 = function(pr) {
     debugger;
-    
-    for(let i=0;i<pr.length;i++){//recorrer las producciones gramaticales y verificar si hay identificadores iguales
+    /*for(let i=0;i<pr.length;i++){//recorrer las producciones gramaticales y verificar si hay identificadores iguales
         if(idIdentificadores.has(pr[i].id)){//si ya existe el identificador,entonces se agrega a la lista para poder hacer saltos en el nodo
             let lista=idIdentificadores.get(pr[i].id);
             for(let j=0;j<lista.length;j++){
@@ -273,7 +272,9 @@ function peg$parse(input, options) {
             }
         }
     }
-    return pr[0];
+    return pr[0];*/
+
+    return new nGramatica(pr);
     /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));

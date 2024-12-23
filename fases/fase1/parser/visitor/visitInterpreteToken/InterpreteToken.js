@@ -98,22 +98,15 @@ export default class InterpreteToken extends Visitor {
         return resultado;
     }
 
-    /**  @param {nProducciones} nProducciones*/
-    visitNProducciones(nProducciones) {
-        let res = new tipoFusion();
-        let nodosTipo= nProducciones.opciones.accept(this);
-        nodosTipo.forEach(element => {//fusionar todos los nodos tipo en una concatenacion de cadenas para luego fusionarlos en un solo nodo tipo
-            res.str +=element.escribir();
-        });
-        return [res];
-    }
+    
     
     /**  @param {nIdentificador} nIdentificador*/
     visitNIdentificador(nIdentificador) {
         if (nIdentificador.nodoId != null)
             return nIdentificador.nodoId.accept(this);
-        else
-            throw new Error("Error en la produccion: " + nIdentificador.id);
+        //else
+        //    throw new Error("Error en la produccion: " + nIdentificador.id);
+        return new tipoFusion();
     }
 
     /**  @param {nExpresion} nExpresion*/
@@ -139,5 +132,26 @@ export default class InterpreteToken extends Visitor {
         return nExpresion.exp.accept(this);
     }
 
+    /**  @param {nProducciones} nProducciones*/
+    visitNProducciones(nProducciones) {
+        /*let res = new tipoFusion();
+        let nodosTipo = nProducciones.opciones.accept(this);
+        nodosTipo.forEach(element => {//fusionar todos los nodos tipo en una concatenacion de cadenas para luego fusionarlos en un solo nodo tipo
+            res.str += element.escribir();
+        });}
+        return [res];*/
+        return nProducciones.opciones.accept(this);
+    }
+
+    /**  @param {nGramatica} nGramatica*/
+    visitNGramatica(nGramatica) {
+        //let nodosTipo = nGramatica.producciones.accept(this);
+        let res = new tipoFusion();
+        const resultado = [].concat(...nGramatica.producciones.map(element => element.accept(this)));
+        resultado.forEach(element => {//fusionar todos los nodos tipo en una concatenacion de cadenas para luego fusionarlos en un solo nodo tipo
+            res.str += element.escribir();
+        });
+        return [res];
+    }
 
 }

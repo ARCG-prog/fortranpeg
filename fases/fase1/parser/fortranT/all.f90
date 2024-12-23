@@ -37,43 +37,303 @@ module parser
             return
         end if
         
-        !analisis de ccc4
-        if ("ccc4" == input(cursor:cursor + 3)) then
-            allocate( character(len=4) :: lexeme)
-            lexeme = input(cursor:cursor + 3)
-            cursor = cursor + 4
+        !analisis de atacar
+        if ("atacar" == input(cursor:cursor + 5)) then
+            allocate( character(len=6) :: lexeme)
+            lexeme = input(cursor:cursor + 5)
+            cursor = cursor + 6
             return
         
         end if
       
-		!analisis de dd3 *
-        vecesAnalizado=cursor
-        do while (analizar)
-            
-        !analisis de dd3
-        if ("dd3" == input(vecesAnalizado:vecesAnalizado + 2)) then
-                vecesAnalizado=vecesAnalizado+3!length(dd3)
-            else if(vecesAnalizado==cursor) then
-                analizar = .false.
-                
-            else
-                analizar = .false.
-                allocate( character(len=3) :: lexeme)
-                lexeme = input(cursor:vecesAnalizado-1)
-                cursor = vecesAnalizado
-                vecesAnalizado=0
-                return
+        !analisis de :
+        if (":" == input(cursor:cursor + 0)) then
+            allocate( character(len=1) :: lexeme)
+            lexeme = input(cursor:cursor + 0)
+            cursor = cursor + 1
+            return
         
         end if
       
-        end do
-        analizar = .true.
         
-        !analisis de ffff5
-        if ("ffff5" == input(cursor:cursor + 4)) then
-            allocate( character(len=5) :: lexeme)
-            lexeme = input(cursor:cursor + 4)
-            cursor = cursor + 5
+        currentState = 1
+        isAccepted = .false.
+        continueLoop = .true.  ! Inicializamos la variable de control
+
+        do vecesAnalizado=cursor, len_trim(input)
+            !do vecesAnalizado = 1, len_trim(input)
+            if (.not. continueLoop) exit  ! Salir del ciclo si continueLoop es falso
+
+            select case(currentState)
+
+                case (0)
+        
+                    if ( vecesAnalizado  - 1 < len_trim(input)) then
+                        isAccepted = .false.
+                        continueLoop = .false.
+                    else
+                        isAccepted = .true.
+                    end if
+        
+                case (1)
+               
+                    if (input(vecesAnalizado:vecesAnalizado) == ' ') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else
+                        !isAccepted = .false.
+                        continueLoop = .false.  ! Cambiamos la variable de control
+                    end if
+                        
+            case default
+                print *, 'Error: Invalid state or transition.'
+                continueLoop = .false.  ! Cambiamos la variable de control
+            end select
+        end do
+
+        if (isAccepted) then
+            !print *, 'The string is accepted.'
+            if(vecesAnalizado-2==0) then
+                lexeme=input(cursor:vecesAnalizado-1)
+                cursor = vecesAnalizado
+            else
+                lexeme=input(cursor:vecesAnalizado-2)
+                cursor = vecesAnalizado -1
+            end if
+
+            vecesAnalizado = 0
+            return
+        else
+            !print *, 'The string is rejected.'
+            vecesAnalizado = 0
+        end if
+
+        
+        currentState = 1
+        isAccepted = .false.
+        continueLoop = .true.  ! Inicializamos la variable de control
+
+        do vecesAnalizado=cursor, len_trim(input)
+            !do vecesAnalizado = 1, len_trim(input)
+            if (.not. continueLoop) exit  ! Salir del ciclo si continueLoop es falso
+
+            select case(currentState)
+
+                case (0)
+        
+                    if ( vecesAnalizado  - 1 < len_trim(input)) then
+                        isAccepted = .false.
+                        continueLoop = .false.
+                    else
+                        isAccepted = .true.
+                    end if
+        
+                case (1)
+               
+                    if (input(vecesAnalizado:vecesAnalizado) == 'a') then
+                        currentState = 0
+                        isAccepted = .true.
+                            
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'b') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'c') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'd') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'e') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'f') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'g') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'h') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'i') then
+                        currentState = 0
+                        isAccepted = .true.
+            
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'j') then 
+                        currentState = 0
+                        isAccepted = .true.
+                    else
+                        isAccepted = .false.
+                        continueLoop = .false.  ! Cambiamos la variable de control
+                    end if
+                    
+            case default
+                print *, 'Error: Invalid state or transition.'
+                continueLoop = .false.  ! Cambiamos la variable de control
+            end select
+        end do
+
+        if (isAccepted) then
+            !print *, 'The string is accepted.'
+            if(vecesAnalizado-2==0) then
+                lexeme=input(cursor:vecesAnalizado-1)
+                cursor = vecesAnalizado
+            else
+                lexeme=input(cursor:vecesAnalizado-2)
+                cursor = vecesAnalizado -1
+            end if
+
+            vecesAnalizado = 0
+            return
+        else
+            !print *, 'The string is rejected.'
+            vecesAnalizado = 0
+        end if
+
+        
+        currentState = 1
+        isAccepted = .false.
+        continueLoop = .true.  ! Inicializamos la variable de control
+
+        do vecesAnalizado=cursor, len_trim(input)
+            !do vecesAnalizado = 1, len_trim(input)
+            if (.not. continueLoop) exit  ! Salir del ciclo si continueLoop es falso
+
+            select case(currentState)
+
+                case (0)
+        
+                    if ( vecesAnalizado  - 1 < len_trim(input)) then
+                        isAccepted = .false.
+                        continueLoop = .false.
+                    else
+                        isAccepted = .true.
+                    end if
+        
+                case (1)
+               
+                    if (input(vecesAnalizado:vecesAnalizado) == '0') then
+                        currentState = 2
+                        isAccepted = .true.
+                            
+                    else if (input(vecesAnalizado:vecesAnalizado) == '1') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '2') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '3') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '4') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '5') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '6') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '7') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '8') then
+                        currentState = 0
+                        isAccepted = .true.
+            
+                    else if (input(vecesAnalizado:vecesAnalizado) == '9') then 
+                        currentState = 0
+                        isAccepted = .true.
+                    else
+                        isAccepted = .false.
+                        continueLoop = .false.  ! Cambiamos la variable de control
+                    end if
+                    
+                case (2)
+               
+                    if (input(vecesAnalizado:vecesAnalizado) == '1') then
+                        currentState = 0
+                        isAccepted = .true.
+                            
+                    else if (input(vecesAnalizado:vecesAnalizado) == '2') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '3') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '4') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '5') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '6') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '7') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '8') then
+                        currentState = 0
+                        isAccepted = .true.
+            
+                    else if (input(vecesAnalizado:vecesAnalizado) == '9') then 
+                        currentState = 0
+                        isAccepted = .true.
+                    else
+                        isAccepted = .false.
+                        continueLoop = .false.  ! Cambiamos la variable de control
+                    end if
+                    
+            case default
+                print *, 'Error: Invalid state or transition.'
+                continueLoop = .false.  ! Cambiamos la variable de control
+            end select
+        end do
+
+        if (isAccepted) then
+            !print *, 'The string is accepted.'
+            if(vecesAnalizado-2==0) then
+                lexeme=input(cursor:vecesAnalizado-1)
+                cursor = vecesAnalizado
+            else
+                lexeme=input(cursor:vecesAnalizado-2)
+                cursor = vecesAnalizado -1
+            end if
+
+            vecesAnalizado = 0
+            return
+        else
+            !print *, 'The string is rejected.'
+            vecesAnalizado = 0
+        end if
+
+        !analisis de 10
+        if ("10" == input(cursor:cursor + 1)) then
+            allocate( character(len=2) :: lexeme)
+            lexeme = input(cursor:cursor + 1)
+            cursor = cursor + 2
             return
         
         end if
@@ -98,6 +358,7 @@ module parser
 
 end module parser
 
+  
   
 
   

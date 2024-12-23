@@ -68,7 +68,7 @@ const analizar = () => {
     errores.length = 0
     let textoFortran=" ";
 
-    try {
+    //try {
         /** @type {Nodo}*/
         const nodo = parse(entrada)
         let interprete1 = new InterpreteToken();
@@ -94,7 +94,7 @@ const analizar = () => {
         // salida.setValue("Análisis Exitoso");
         // Limpiar decoraciones previas si la validación es exitosa
         decorations = editor.deltaDecorations(decorations, []);
-    } catch (e) {
+    /*} catch (e) {
 
         if(e.location === undefined){
             
@@ -138,7 +138,7 @@ const analizar = () => {
             ]);
         }
         
-    }
+    }*/
 };
 
 // Escuchar cambios en el contenido del editor

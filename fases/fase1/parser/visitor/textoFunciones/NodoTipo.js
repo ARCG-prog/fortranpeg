@@ -75,7 +75,6 @@ export class tipoPatron extends NodoTipo {
     }
     /** @param {string} str @param {boolean} i*/
     escribir() {
-        debugger;
         const syntaxTree = parseRegex(this.str); // arbol de sintaxis
         const automaton = generateAutomata(syntaxTree); // thompson
         const optimizedAutomaton = optimizeAutomaton(automaton); // subconjuntos

@@ -24,10 +24,10 @@ gramatica = _ pr:producciones+ _ {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
     }
     // Validar que todos los usos están en ids
-    let noEncontrados = usos.filter(item => !ids.includes(item));
+    /*let noEncontrados = usos.filter(item => !ids.includes(item));
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
-    }
+    }*/
     return new nGramatica(pr);
     
 }
@@ -93,6 +93,7 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 corchetes
     = "[" cont:(/*rango /*/ contenido) "]" {
         //let cont=cont;
+        debugger;
         let caracteres="";
         let rangos="";
         for(let i=0;i<cont.length;i++){

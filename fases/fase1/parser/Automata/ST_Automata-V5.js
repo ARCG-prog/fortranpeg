@@ -1,5 +1,5 @@
 // Clase para representar un nodo del árbol sintáctico
-import fs from 'fs';
+//import fs from 'fs';
 
 class Node {
     constructor(value, left = null, right = null) {
@@ -155,7 +155,7 @@ export function parseRegex(input) {
 
 
 // Generación del autómata finito a partir del árbol sintáctico
-/*export*/ function generateAutomata(node) {
+export function generateAutomata(node) {
     let stateCounter = 0;
     const transitions = [];
     const finalStates = new Set();
@@ -222,7 +222,7 @@ export function parseRegex(input) {
 }
 
 // Optimización de la tabla de estados mediante la teoría de subconjuntos
-/*export*/ function optimizeAutomaton(automaton) {
+export function optimizeAutomaton(automaton) {
     const epsilonClosure = (states, transitions) => {
         const stack = [...states];
         const closure = new Set(states);
@@ -297,7 +297,7 @@ export function parseRegex(input) {
 }
 
 // Minimización del DFA mediante partición
-/*export*/ function minimizeDFA(dfa) {
+export function minimizeDFA(dfa) {
     let partitions = [];
     let newPartitions = [];
 
@@ -359,7 +359,7 @@ export function parseRegex(input) {
 }
 
 // Generar DOT para el árbol sintáctico
-/*export*/ function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
+export function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
     let dot = '';
     const currentId = parentId;
 
@@ -384,7 +384,7 @@ export function parseRegex(input) {
 }
 
 // Generar DOT para el autómata
-/*export*/ function generateAutomatonDot(automaton) {
+export function generateAutomatonDot(automaton) {
     let dot = `digraph Automaton {
   rankdir=LR;
 `;
@@ -405,13 +405,13 @@ export function parseRegex(input) {
     return dot;
 }
 
-/*export*/ function writeDotToFile(dot, filename) {
+export function writeDotToFile(dot, filename) {
     fs.writeFileSync(filename, dot);
     console.log(`Archivo DOT generado: ${filename}`);
 }
 
 // Construcción de la tabla de estados
-/*export*/ function buildStateTable(automaton) {
+export function buildStateTable(automaton) {
     const table = [];
     for (let [start, symbol, end] of automaton.transitions) {
         table.push({ Start: start, Symbol: symbol || 'ε', End: end });
@@ -420,7 +420,7 @@ export function parseRegex(input) {
 }
 
 
-/*export*/ function generateFortranCode(automaton) {
+export function generateFortranCode(automaton) {
     const { states, startState, finalStates, transitions } = automaton;
 
     // Crear un mapa de transiciones por estado
@@ -543,56 +543,57 @@ export function parseRegex(input) {
 // Prueba
 //const regex = "[ab].[ui].[012]+";
 const regex = "[ab][ui][012]+";
-try {
-    const syntaxTree = parseRegex(regex);
-    // console.log("Árbol sintáctico generado:", JSON.stringify(syntaxTree, null, 2));
-    // // Generar y escribir DOT para el árbol sintáctico
-    // const treeDot = `digraph Tree {${generateTreeDot(syntaxTree)}}`;
-    // writeDotToFile(treeDot, 'tree.dot');
+export function myFunction(){
+    try {
+        const syntaxTree = parseRegex(regex);
+        // console.log("Árbol sintáctico generado:", JSON.stringify(syntaxTree, null, 2));
+        // // Generar y escribir DOT para el árbol sintáctico
+        // const treeDot = `digraph Tree {${generateTreeDot(syntaxTree)}}`;
+        // writeDotToFile(treeDot, 'tree.dot');
 
-    // Generar autómata inicial
-    const automaton = generateAutomata(syntaxTree);
-    // const automatonDot = generateAutomatonDot(automaton);
-    // writeDotToFile(automatonDot, 'automaton_initial.dot');
+        // Generar autómata inicial
+        const automaton = generateAutomata(syntaxTree);
+        // const automatonDot = generateAutomatonDot(automaton);
+        // writeDotToFile(automatonDot, 'automaton_initial.dot');
 
-    // Optimizar el autómata
-    const optimizedAutomaton = optimizeAutomaton(automaton);
-    // const optimizedDot = generateAutomatonDot(optimizedAutomaton);
-    // writeDotToFile(optimizedDot, 'automaton_optimized.dot');
+        // Optimizar el autómata
+        const optimizedAutomaton = optimizeAutomaton(automaton);
+        // const optimizedDot = generateAutomatonDot(optimizedAutomaton);
+        // writeDotToFile(optimizedDot, 'automaton_optimized.dot');
 
-    // Minimizar el DFA
-    const minimizedDFA = minimizeDFA(optimizedAutomaton);
-    const minimizedDot = generateAutomatonDot(minimizedDFA);
-    writeDotToFile(minimizedDot, 'automaton_minimized.dot');
+        // Minimizar el DFA
+        const minimizedDFA = minimizeDFA(optimizedAutomaton);
+        const minimizedDot = generateAutomatonDot(minimizedDFA);
+        writeDotToFile(minimizedDot, 'automaton_minimized.dot');
 
 
-    // // Mostrar tablas de estados
-    // const initialStateTable = buildStateTable(automaton);
-    // console.table(initialStateTable);
+        // // Mostrar tablas de estados
+        // const initialStateTable = buildStateTable(automaton);
+        // console.table(initialStateTable);
 
-    // const optimizedStateTable = buildStateTable({
-    //     transitions: optimizedAutomaton.transitions,
-    //     finalStates: optimizedAutomaton.finalStates,
-    // });
-    // console.table(optimizedStateTable);
+        // const optimizedStateTable = buildStateTable({
+        //     transitions: optimizedAutomaton.transitions,
+        //     finalStates: optimizedAutomaton.finalStates,
+        // });
+        // console.table(optimizedStateTable);
 
-    // const minimizedStateTable = buildStateTable({
-    //     transitions: minimizedDFA.transitions,
-    //     finalStates: minimizedDFA.finalStates,
-    // });
-    // console.table(minimizedStateTable);
+        // const minimizedStateTable = buildStateTable({
+        //     transitions: minimizedDFA.transitions,
+        //     finalStates: minimizedDFA.finalStates,
+        // });
+        // console.table(minimizedStateTable);
 
-    // console.log("-----------------------------Autoama---------------------------")
-    // console.log(minimizedDFA)
+        // console.log("-----------------------------Autoama---------------------------")
+        // console.log(minimizedDFA)
 
-    console.log("-----------Código Fortransdfsdf Automata--------------")
-    console.log(generateFortranCode(minimizedDFA))
+        //console.log("-----------Código Fortransdfsdf Automata--------------")
+        //console.log(generateFortranCode(minimizedDFA))
 
-} catch (error) {
-    console.error("Error:", error.message);
+    } catch (error) {
+        console.error("Error:", error.message);
+    }
 }
-
-//export default { parseRegex, generateAutomata, optimizeAutomaton, minimizeDFA, generateFortranCode };
+export default { parseRegex, generateAutomata, optimizeAutomaton, minimizeDFA, generateFortranCode };
 
 //flujoa para que funcione
 // const regex = "[ab]*[cd]+|[ef]?|[uioa][01234]+";

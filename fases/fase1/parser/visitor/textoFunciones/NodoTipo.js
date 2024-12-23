@@ -1,5 +1,5 @@
 
-
+import { parseRegex, generateAutomata, optimizeAutomaton, minimizeDFA, generateFortranCode } from '../../Automata/ST_Automata-V5.js';
 //es un estilo de patron decorador, no es tan exacto pero funciona similar
 /**
  * @fileoverview Clase NodoTipo que es la clase padre de los tipos de nodosTipo que permiten escribir en lenguaje Fortran
@@ -71,7 +71,12 @@ export class tipoPatron extends NodoTipo {
     /** @param {string} str @param {boolean} i*/
     escribir() {
         debugger;
-        return "";
+        const syntaxTree = parseRegex(this.str); // arbol de sintaxis
+        const automaton = generateAutomata(syntaxTree); // thompson
+        const optimizedAutomaton = optimizeAutomaton(automaton); // subconjuntos
+        const minimizedDFA = minimizeDFA(optimizedAutomaton); // minimizacion
+        const codigoFortran = generateFortranCode(minimizedDFA)
+        return codigoFortran;
     }
 }
 export class tipoPunto extends NodoTipo {
@@ -254,7 +259,7 @@ export class tipoTokenaizer extends NodoTipo {
 
     escribir() {
         return `
-module tokenizer
+module parser
     implicit none
     contains
     function to_lowercase(str)
@@ -270,16 +275,21 @@ module tokenizer
         end do
     end function to_lowercase
 
-    function nextSym(input, cursor) result(lexeme)
+    function lexemas(input, cursor) result(lexeme)
+        !analisis de lexemas
         character(len=*), intent(in) :: input
         integer, intent(inout) :: cursor
         character(len=:), allocatable :: lexeme
-        !analisis *,+
-        integer :: vecesAnalizado
-        logical:: analizar
+        !analisis de lexemas
+
+        !analisis extras
+        integer :: vecesAnalizado, currentState
+        logical:: analizar, isAccepted, continueLoop
         analizar = .true.
         vecesAnalizado = 0
-        !fin analisis *,+
+        !fin analisis extras
+
+
 
         if (cursor > len(input)) then
             allocate( character(len=3) :: lexeme )
@@ -289,8 +299,24 @@ module tokenizer
         ${this.nodo.escribir()}
         print *, "error lexico en col ", cursor, ', "'//input(cursor:cursor)//'"'
         lexeme = "ERROR"
-    end function nextSym
-end module tokenizer
+    end function lexemas
+
+    subroutine parse(input)
+        implicit none
+        character(len=*), intent(in) :: input
+        character(len=:), allocatable :: lexeme
+        integer :: cursor
+
+        cursor = 1
+        do while (lexeme /= "EOF" .and. lexeme /= "ERROR")
+            lexeme = lexemas(input, cursor)
+            print *, lexeme
+        end do
+    end subroutine parse
+
+
+end module parser
+
   `;
     }
 }
@@ -302,3 +328,4 @@ export default { NodoTipo,
     tipoCuantificador, tipoCuantificadorLiteral, tipoCuantificadorPunto, 
      tipoTokenaizer, 
     tipoFusion, tipoOpcionOR };
+

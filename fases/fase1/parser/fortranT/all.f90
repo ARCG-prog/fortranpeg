@@ -1,3 +1,4 @@
+
 module parser
     implicit none
     contains
@@ -13,27 +14,6 @@ module parser
             end if
         end do
     end function to_lowercase
-    function rango(strCaracteres,strRangos,charComparacion) result(match)
-        character(len=*), intent(in) :: strCaracteres
-        character(len=*), intent(in) :: strRangos
-        character(len=1), intent(in) :: charComparacion
-        logical :: match
-        integer :: i
-        
-        do i=1, len(strCaracteres)
-            if (charComparacion == strCaracteres(i:i)) then
-                match = .true.
-                return
-            end if
-        end do
-        do i=1, len(strRangos), 2
-            if (charComparacion >= strRangos(i:i) .and. charComparacion <= strRangos(i+1:i+1)) then
-                match = .true.
-                return
-            end if
-        end do
-        match = .false.
-    end function rango
 
     function lexemas(input, cursor) result(lexeme)
         !analisis de lexemas
@@ -49,22 +29,16 @@ module parser
         vecesAnalizado = 0
         !fin analisis extras
 
+
+
         if (cursor > len(input)) then
             allocate( character(len=3) :: lexeme )
             lexeme = "EOF"
             return
         end if
         
-        !analisis de ab
-	    if ("ab" == input(cursor:cursor + 1)) then
-            allocate( character(len=2) :: lexeme)
-            lexeme = input(cursor:cursor + 1)
-            cursor = cursor + 2
-            return
-        end if
-
-        !αααααααααααααααααααααααααααααααααααααααααααααααααα
-                currentState = 1
+        
+        currentState = 2
         isAccepted = .false.
         continueLoop = .true.  ! Inicializamos la variable de control
 
@@ -75,76 +49,113 @@ module parser
             select case(currentState)
 
                 case (0)
-
-                    if (input(vecesAnalizado:vecesAnalizado) == '0') then
+               
+                    if (input(vecesAnalizado:vecesAnalizado) == 'c') then
                         currentState = 0
                         isAccepted = .true.
-
+                            
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'd') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '0') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
                     else if (input(vecesAnalizado:vecesAnalizado) == '1') then
                         currentState = 0
                         isAccepted = .true.
-
+                    
                     else if (input(vecesAnalizado:vecesAnalizado) == '2') then
                         currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '3') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '4') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '5') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'h') then
+                        currentState = 1
+                        isAccepted = .true.
+            
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'i') then 
+                        currentState = 1
                         isAccepted = .true.
                     else
                         isAccepted = .false.
                         continueLoop = .false.  ! Cambiamos la variable de control
                     end if
-
+                    
                     if ( (vecesAnalizado) == len_trim(input)) then
                         isAccepted = .true.
                         continueLoop = .false.
                     else
                         isAccepted = .false.
                     end if
-
+        
                 case (1)
-
+        
+                    if ( vecesAnalizado  - 1 < len_trim(input)) then
+                        isAccepted = .false.
+                        continueLoop = .false.
+                    else
+                        isAccepted = .true.
+                    end if
+        
+                case (2)
+               
                     if (input(vecesAnalizado:vecesAnalizado) == 'a') then
                         currentState = 2
                         isAccepted = .true.
-
-                    else if (input(vecesAnalizado:vecesAnalizado) == 'b') then
+                            
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'k') then
                         currentState = 2
                         isAccepted = .true.
-                    else
-                        isAccepted = .false.
-                        continueLoop = .false.  ! Cambiamos la variable de control
-                    end if
-
-                case (2)
-
-                    if (input(vecesAnalizado:vecesAnalizado) == 'u') then
-                        currentState = 3
-                        isAccepted = .true.
-
-                    else if (input(vecesAnalizado:vecesAnalizado) == 'i') then
-                        currentState = 3
-                        isAccepted = .true.
-                    else
-                        isAccepted = .false.
-                        continueLoop = .false.  ! Cambiamos la variable de control
-                    end if
-
-                case (3)
-
-                    if (input(vecesAnalizado:vecesAnalizado) == '0') then
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'c') then
                         currentState = 0
                         isAccepted = .true.
-
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == 'd') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '0') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
                     else if (input(vecesAnalizado:vecesAnalizado) == '1') then
                         currentState = 0
                         isAccepted = .true.
-
+                    
                     else if (input(vecesAnalizado:vecesAnalizado) == '2') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '3') then
+                        currentState = 0
+                        isAccepted = .true.
+                    
+                    else if (input(vecesAnalizado:vecesAnalizado) == '4') then
+                        currentState = 0
+                        isAccepted = .true.
+            
+                    else if (input(vecesAnalizado:vecesAnalizado) == '5') then 
                         currentState = 0
                         isAccepted = .true.
                     else
                         isAccepted = .false.
                         continueLoop = .false.  ! Cambiamos la variable de control
                     end if
-
+                    
             case default
                 print *, 'Error: Invalid state or transition.'
                 continueLoop = .false.  ! Cambiamos la variable de control
@@ -161,9 +172,6 @@ module parser
             !print *, 'The string is rejected.'
             vecesAnalizado = 0
         end if
-        !ωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωωω
-
-
 
         print *, "error lexico en col ", cursor, ', "'//input(cursor:cursor)//'"'
         lexeme = "ERROR"
@@ -181,10 +189,15 @@ module parser
             print *, lexeme
         end do
     end subroutine parse
-    
+
 
 end module parser
 
+  
+
+  
+
+  
 
 
 program test
@@ -199,25 +212,26 @@ program test
     !./hello.exe fortran.f90
 
 
-	if (command_argument_count() == 0) then
-		print *, "error: no input file"
-		stop
-	end if
+	! if (command_argument_count() == 0) then
+	! 	print *, "error: no input file"
+	! 	stop
+	! end if
 
-	call get_command_argument(1, filename)
+	! call get_command_argument(1, filename)
 
-	inquire(file=filename, exist=exists, size=len)
-	if (exists) then
-		open (1, file=filename, status='old', action='read', access='stream', form='unformatted')
-		allocate (character(len=len) :: input)
-        read (1) input
-		call parse(input)
-	else
-		print *, "error: file is not present"
-		stop
-	end if
+	! inquire(file=filename, exist=exists, size=len)
+	! if (exists) then
+	! 	open (1, file=filename, status='old', action='read', access='stream', form='unformatted')
+	! 	allocate (character(len=len) :: input)
+    !     read (1) input
+	! 	call parse(input)
+       call parse("ff")
+	! else
+	! 	print *, "error: file is not present"
+	! 	stop
+	! end if
 
-	close(u)
+	! close(u)
 
 end program test
 

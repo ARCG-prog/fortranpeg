@@ -123,7 +123,7 @@ module tokenizer
         end do
     end function to_lowercase
 
-    function nextSym(input, cursor) result(lexeme)
+    function lexemas(input, cursor) result(lexeme)
         character(len=*), intent(in) :: input
         integer, intent(inout) :: cursor
         character(len=:), allocatable :: lexeme
@@ -136,7 +136,7 @@ module tokenizer
         ${this.str}
         print *, "error lexico en col ", cursor, ', "'//input(cursor:cursor)//'"'
         lexeme = "ERROR"
-    end function nextSym
+    end function lexemas
 end module tokenizer
   `;
     }

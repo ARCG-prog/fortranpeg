@@ -10,7 +10,7 @@ class Node {
 }
 
 // Función para analizar la cadena y construir un árbol de sintaxis
-function parseRegex(input) {
+export function parseRegex(input) {
     const stack = [];
 
     for (let i = 0; i < input.length; i++) {
@@ -155,12 +155,12 @@ function parseRegex(input) {
 
 
 // Generación del autómata finito a partir del árbol sintáctico
-function generateAutomata(node) {
+export function generateAutomata(node) {
     let stateCounter = 0;
     const transitions = [];
     const finalStates = new Set();
 
-    function traverse(node) {
+    export function traverse(node) {
         if (!node) throw new Error("Nodo inválido durante la generación del autómata");
 
         const startState = stateCounter++;
@@ -222,7 +222,7 @@ function generateAutomata(node) {
 }
 
 // Optimización de la tabla de estados mediante la teoría de subconjuntos
-function optimizeAutomaton(automaton) {
+export function optimizeAutomaton(automaton) {
     const epsilonClosure = (states, transitions) => {
         const stack = [...states];
         const closure = new Set(states);
@@ -297,7 +297,7 @@ function optimizeAutomaton(automaton) {
 }
 
 // Minimización del DFA mediante partición
-function minimizeDFA(dfa) {
+export function minimizeDFA(dfa) {
     let partitions = [];
     let newPartitions = [];
 
@@ -359,7 +359,7 @@ function minimizeDFA(dfa) {
 }
 
 // Generar DOT para el árbol sintáctico
-function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
+export function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
     let dot = '';
     const currentId = parentId;
 
@@ -384,7 +384,7 @@ function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
 }
 
 // Generar DOT para el autómata
-function generateAutomatonDot(automaton) {
+export function generateAutomatonDot(automaton) {
     let dot = `digraph Automaton {
   rankdir=LR;
 `;
@@ -405,13 +405,13 @@ function generateAutomatonDot(automaton) {
     return dot;
 }
 
-function writeDotToFile(dot, filename) {
+export function writeDotToFile(dot, filename) {
     fs.writeFileSync(filename, dot);
     console.log(`Archivo DOT generado: ${filename}`);
 }
 
 // Construcción de la tabla de estados
-function buildStateTable(automaton) {
+export function buildStateTable(automaton) {
     const table = [];
     for (let [start, symbol, end] of automaton.transitions) {
         table.push({ Start: start, Symbol: symbol || 'ε', End: end });
@@ -420,7 +420,7 @@ function buildStateTable(automaton) {
 }
 
 
-function generateFortranCode(automaton) {
+export function generateFortranCode(automaton) {
     const { states, startState, finalStates, transitions } = automaton;
 
     // Crear un mapa de transiciones por estado
@@ -595,3 +595,12 @@ try {
     console.error("Error:", error.message);
 }
 
+export default { parseRegex, generateAutomata, optimizeAutomaton, minimizeDFA, generateFortranCode };
+
+//flujoa para que funcione
+// const regex = "[ab]*[cd]+|[ef]?|[uioa][01234]+";
+// const syntaxTree = parseRegex(regex);
+// const automaton = generateAutomata(syntaxTree); // thompson
+// const optimizedAutomaton = optimizeAutomaton(automaton); // subconjuntos
+// const minimizedDFA = minimizeDFA(optimizedAutomaton); // minimizacion
+// const codigoFortran = generateFortranCode(minimizedDFA)

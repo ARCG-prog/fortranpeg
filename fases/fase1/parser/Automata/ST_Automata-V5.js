@@ -454,62 +454,82 @@ function generateFortranCode(automaton) {
 
     // Generar código Fortran para cada estado
     for (const state of states) {
-        fortranCode += `      case (${state})
-`;
-        if (stateTransitions[state]) {
-            fortranCode += `        if (i > len_trim(inputString)) exit
-        select case(inputString(i:i))
-`;
-            for (const [symbol, nextState] of Object.entries(stateTransitions[state])) {
-                fortranCode += `          case ('${symbol}')
-            currentState = ${nextState}
-            exit
-`;
-            }
-            fortranCode += `          case default
-            print *, 'The string is rejected. Invalid character in state ${state}.'
-            continueLoop = .false.
-            exit
-        end select
-`;
-        } else {
-            fortranCode += `        print *, 'The string is rejected. No transitions available from state ${state}.'
-        continueLoop = .false.
-`;
+        fortranCode += `
+        case (${state})
+        `;
+        let contador = 1;
+        let cantidadTrans = transitions.filter(subArray => subArray[0] === state).length;
+
+        for (const trans of transitions){
+            if (trans[0] == state){
+                if (contador == 1){
+                    fortranCode += `       
+            if (inputString(i:i) == '${trans[1]}') then
+                currentState = ${trans[2]}
+                isAccepted = .true.
+                    `;
+                    if (contador == cantidadTrans){
+                        fortranCode += `
+            else
+                isAccepted = .false.
+                continueLoop = .false.  ! Cambiamos la variable de control
+            end if
+                        `;
+                    }
+                    contador++;
+                } else if (contador < cantidadTrans){
+                    fortranCode += `        
+            else if (inputString(i:i) == '${trans[1]}') then
+                currentState = ${trans[2]}
+                isAccepted = .true.
+            `;
+            contador++;
+                }else if(contador == cantidadTrans) {
+                    fortranCode += `
+            else if (inputString(i:i) == '${trans[1]}') then 
+                currentState = ${trans[2]}
+                isAccepted = .true.
+            else
+                isAccepted = .false.
+                continueLoop = .false.  ! Cambiamos la variable de control
+            end if
+                    `;
+                }
+            } 
         }
 
-        // Validar si un estado de aceptación no debe consumir más caracteres
-        if (finalStates.has(state)) {
-            fortranCode += `        if (i == len_trim(inputString)) then
-          isAccepted = .true.
-          continueLoop = .false.
-        else if (i < len_trim(inputString)) then
-          print *, 'The string is rejected. Extra characters found after final state.'
-          continueLoop = .false.
-        end if
-`;
+        if(cantidadTrans > 1){
+            // validar que el state esté en finalStates
+            if(finalStates.has(state)){
+                fortranCode += `
+            if ( (i) == len_trim(inputString)) then
+                isAccepted = .true.
+                continueLoop = .false.
+            else
+                isAccepted = .false.
+            end if
+        `;
+            }
+        } else if (cantidadTrans < 1){
+            fortranCode += `
+            if ( i  - 1 < len_trim(inputString)) then
+                isAccepted = .false.
+                continueLoop = .false.
+            else
+                isAccepted = .true.
+            end if
+        `;
         }
     }
 
-    fortranCode += `      case default
+
+
+    fortranCode += `
+    case default
         print *, 'Error: Invalid state or transition.'
-        continueLoop = .false.
+        continueLoop = .false.  ! Cambiamos la variable de control
     end select
   end do
-
-  ! Verificar estado final
-  select case(currentState)
-`;
-
-    for (const finalState of finalStates) {
-        fortranCode += `    case (${finalState})
-      isAccepted = .true.
-`;
-    }
-
-    fortranCode += `    case default
-      isAccepted = .false.
-  end select
 
   if (isAccepted) then
     print *, 'The string is accepted.'
@@ -525,7 +545,7 @@ end program AutomataValidator
 
 // Prueba
 //const regex = "[ab].[ui].[012]+";
-const regex = "[abc][cd]*[a]?";
+const regex = "[ab]*[cd]+|[ef]?|[uioa][01234]+";
 try {
     const syntaxTree = parseRegex(regex);
     console.log("Árbol sintáctico generado:", JSON.stringify(syntaxTree, null, 2));
@@ -574,3 +594,4 @@ try {
 } catch (error) {
     console.error("Error:", error.message);
 }
+

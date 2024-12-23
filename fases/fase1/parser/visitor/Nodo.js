@@ -114,11 +114,9 @@ export class nPunto extends Nodo {
 }
 
 export class nRango extends Nodo {
-    constructor(aStr,bStr,negacion) {
+    constructor(str) {
         super();
-        this.aStr = aStr;
-        this.bStr = bStr;
-        this.negacion = negacion;
+        this.str = str;
     }
     accept(visitor) {
         return visitor.visitNRango(this);

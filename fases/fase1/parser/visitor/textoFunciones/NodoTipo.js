@@ -24,13 +24,22 @@ export class tipoLiteral extends NodoTipo {
         this.strCursor = "cursor";
         this.strCondicion = `
             allocate( character(len=${this.str.length}) :: lexeme)
-            lexeme = input(cursor:cursor + ${this.str.length - 1})
+            lexeme = input(cursor:cursor + ${this.str.length})
             cursor = cursor + ${this.str.length}
             return
         `;
     }
+    /** @param {string} str @param {boolean} i*/
     setAll(str,i){
         this.str = str;
+        this.i = i;
+    }
+    /**  @param {string} str */
+    setStr(str){
+        this.str = str;
+    }
+    /** @param {boolean} i */
+    setI(i){
         this.i = i;
     }
 
@@ -42,9 +51,9 @@ export class tipoLiteral extends NodoTipo {
     escribir() {
         let op="";
         if(this.i)
-            op = `if ("${this.str.toLowerCase()}" == to_lowercase(input(${this.strCursor}:${this.strCursor} + ${this.str.length - 1}))) then`;
+            op = `if ("${this.str.toLowerCase()}" == to_lowercase(input(${this.strCursor}:${this.strCursor} + ${this.str.length}))) then`;
         else
-            op = `if ("${this.str}" == input(${this.strCursor}:${this.strCursor} + ${this.str.length - 1})) then`;
+            op = `if ("${this.str}" == input(${this.strCursor}:${this.strCursor} + ${this.str.length})) then`;
         return `
         !analisis de ${this.str}
         ${op + this.strCondicion}
@@ -55,34 +64,13 @@ export class tipoLiteral extends NodoTipo {
 export class tipoPatron extends NodoTipo {
     constructor(){
         super();
-        /*this.i=false;this.i=false;
-        this.strRango="";
-        this.strCursor = "cursor";
-        this.strCondicion = `
-            allocate( character(len=1) :: lexeme )
-            lexeme = input(cursor:cursor)
-            cursor = cursor + 1
-            return
-        `;*/
+    }
+    setStr(str){
+        this.str = str;
     }
     /** @param {string} str @param {boolean} i*/
-    setAll(str,strRango,i){
-        /*this.str = str;
-        this.strRango = strRango;
-        this.i = i;*/
-    }
     escribir() {
-        /*let op ="";
-        if(this.i)
-            op = `if(rango("${str.toLowerCase()}","${this.strRango.toLowerCase()}",to_lowercase(input(${this.strCursor}:${this.strCursor})))) then`;
-        else
-            op = `if(rango("${str}","${this.strRango}",input(${this.strCursor}:${this.strCursor}))) then`;
-        
-        return `
-        !analisis de ${this.str} ${this.strRango}
-        ${op + this.strCondicion}
-        end if
-        `*/
+        debugger;
         return "";
     }
 }
@@ -128,8 +116,6 @@ export class tipoPunto extends NodoTipo {
       `
     }
 }
-
-
 export class tipoCuantificador extends NodoTipo {
     constructor(){
         super();
@@ -145,6 +131,39 @@ export class tipoCuantificador extends NodoTipo {
         throw new Error("Método 'escribir' debe ser implementado.");
     }
 }
+export class tipoI extends NodoTipo {
+    constructor(){
+        super();
+        /** @type {tipoLiteral|null} */
+        this.nodo=null;
+    }
+
+    /** @param {tipoLiteral} nodo */
+    setNodo(nodo){
+        this.nodo = nodo;
+    }
+
+    escribir() {
+        this.nodo.setI(true);
+        return this.nodo.escribir();
+    }
+}
+
+export class tipoOpcionOR extends NodoTipo {
+    constructor(){
+        super();
+        /** @type {NodoTipo|null} */
+        this.nodo=null;
+    }
+    /** @param {NodoTipo} nodo */
+    setNodo(nodo){
+        this.nodo = nodo;
+    }
+    escribir() {
+        return this.nodo.escribir();
+    }
+}
+
 export class tipoCuantificadorLiteral extends tipoCuantificador {
     constructor(){
         super();
@@ -213,7 +232,8 @@ export class tipoCuantificadorPunto extends tipoCuantificador {
 }
 
 
-export class tipoConcatenacion extends NodoTipo {
+
+export class tipoFusion extends NodoTipo {
     constructor(){
         super();
         this.str="";
@@ -222,7 +242,6 @@ export class tipoConcatenacion extends NodoTipo {
         return this.str;
     }
 }
-
 export class tipoTokenaizer extends NodoTipo {
     constructor(){
         super();
@@ -230,7 +249,6 @@ export class tipoTokenaizer extends NodoTipo {
     }
     /** @param {NodoTipo} nodo */
     setNodo(nodo){
-        debugger;
         this.nodo = nodo;
     }
 
@@ -278,8 +296,9 @@ end module tokenizer
 }
 
 
+
 export default { NodoTipo, 
     tipoLiteral, tipoPatron, tipoPunto, 
     tipoCuantificador, tipoCuantificadorLiteral, tipoCuantificadorPunto, 
      tipoTokenaizer, 
-    tipoConcatenacion };
+    tipoFusion, tipoOpcionOR };

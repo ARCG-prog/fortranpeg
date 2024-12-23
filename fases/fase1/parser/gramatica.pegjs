@@ -1,9 +1,4 @@
 {{
-    
-    // let identificadores = []
-
-    // import { identificadores } from '../index.js'
-
     import { ids, usos} from '../index.js'
     import { ErrorReglas } from './error.js';
     import { errores } from '../index.js'
@@ -15,6 +10,7 @@
 
 gramatica = _ pr:producciones+ _ {
     debugger;
+    
     for(let i=0;i<pr.length;i++){//recorrer las producciones gramaticales y verificar si hay identificadores iguales
         if(idIdentificadores.has(pr[i].id)){//si ya existe el identificador,entonces se agrega a la lista para poder hacer saltos en el nodo
             let lista=idIdentificadores.get(pr[i].id);
@@ -58,9 +54,9 @@ expresion = ("@")? _ id:(identificador _ ":")?_ vari:varios? _ exp:expresiones _
       else//si no existe, se crea una nueva lista
         idIdentificadores.set(exp.id,[exp]);
     }
-    else if(exp instanceof nPunto && vari!=null && vari=="!")
+    else if(exp instanceof nPunto && vari!=null && vari=="!")//es por !. error en la gramatica
         exp.setNegacion(true);
-        
+    
     return new nExpresion(id,exp,veces);
 }
 
@@ -75,7 +71,7 @@ expresiones  =  id:identificador {
                                 }
                 / lit:literales i:"i"? { return new nLiterales(lit,i?true:false); }
                 / "(" _ @opciones _ ")" 
-                / corchetes "i"? /**/ {}
+                / cor:corchetes "i"? /**/ {return new nRango(cor);}
                 / "." {return new nPunto(false); }
                 / "!." {return new nPunto(true); }
 
@@ -94,7 +90,31 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 
 // Regla principal que analiza corchetes con contenido
 corchetes
-    = "[" cont:(/*rango /*/ contenido)+ "]" {
+    = "[" cont:(/*rango /*/ contenido) "]" {
+        //let cont=cont;
+        let caracteres="";
+        let rangos="";
+        for(let i=0;i<cont.length;i++){
+          if(cont[i]=="-" && i>0 && i<cont.length-1){//si es un rango
+            let inicio=cont[i-1];
+            let fin=cont[i+1];
+            if(inicio.charCodeAt(0) > fin.charCodeAt(0)) {//si el rango es inválido
+              errores.push(new ErrorReglas(`Rango inválido: [${inicio}-${fin}]`));
+            }
+            else{
+              let res="";
+              for(let j=inicio.charCodeAt(0);j<=fin.charCodeAt(0);j++){
+                res+=String.fromCharCode(j);
+              }
+              rangos+=res;
+              caracteres=caracteres.slice(0,-1)
+              i++;
+            }
+          }else{
+            caracteres+=cont[i];
+          }
+        }
+        return "["+caracteres+rangos+"]";
         //return `Entrada válida: [${input}]`;
         /*  
             let map = new Map();
@@ -104,6 +124,7 @@ corchetes
             
             return funcCorchetes(map);
         */
+       //throw new Error("No implementado");
     }
 
 // Regla para validar un rango como [A-Z]
@@ -123,8 +144,8 @@ caracter
 // Coincide con cualquier contenido que no incluya "]"
 contenido
     = //(/*corchete /*/ texto)+
-    val:$([^[\]-] "-" [^[\]-]) { return [val,"r"]; } //rango 0-9
-    / val:$([^[\]]+) { return val; [val,"s"]; } //str abc
+    //val:$([^[\]-] "-" [^[\]-]) { return [val,"r"]; } //rango 0-9
+    /*/*/ val:$([^[\]]+) { return val.split(""); } //str abc
 
 corchete
     = "[" contenido "]"

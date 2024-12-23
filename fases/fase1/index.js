@@ -76,8 +76,7 @@ const analizar = () => {
         let tokenizer = new tipoTokenaizer();
         tokenizer.setNodo(nodo.accept(interprete1)[0]);//primero ejecuto vistor, luego obtengo NodoTipo que esta en un array de NodoTipo con solo un elemento
         textoFortran = tokenizer.escribir();
-        // Uso de la función
-        //descargarArchivo(textoFortran, 'modulo.f90', 'text/plain');
+
         btn_descargar.addEventListener('click', () => {
             descargarArchivo(textoFortran, 'entrada.f90', 'text/plain');
         });

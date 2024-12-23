@@ -58,6 +58,8 @@ export default class InterpreteToken extends Visitor {
                 console.log("es un literal");
                 if (i < resultado.length - 1 && resultado[i + 1] instanceof tipoLiteral) { 
                     resultado[i].str += resultado[i + 1].str;
+                    debugger;
+                    resultado[i].asignarstrCondicion();
                     resultado.splice(i + 1, 1); // Eliminar el siguiente si es del mismo tipo
                     i--; // Disminuir el contador para volver a verificar el mismo índice
                 } else

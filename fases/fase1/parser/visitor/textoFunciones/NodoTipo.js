@@ -22,13 +22,17 @@ export class tipoLiteral extends NodoTipo {
         super();
         this.i=false;
         this.strCursor = "cursor";
+        this.strCondicion ="";
+    }
+    asignarstrCondicion(){
         this.strCondicion = `
             allocate( character(len=${this.str.length}) :: lexeme)
-            lexeme = input(cursor:cursor + ${this.str.length})
-            cursor = cursor + ${this.str.length}
+            lexeme = input(cursor:cursor + ${this.str.length-1})
+            cursor = cursor + ${this.str.length-1}
             return
         `;
     }
+
     /** @param {string} str @param {boolean} i*/
     setAll(str,i){
         this.str = str;
@@ -51,9 +55,10 @@ export class tipoLiteral extends NodoTipo {
     escribir() {
         let op="";
         if(this.i)
-            op = `if ("${this.str.toLowerCase()}" == to_lowercase(input(${this.strCursor}:${this.strCursor} + ${this.str.length}))) then`;
+            op = `if ("${this.str.toLowerCase()}" == to_lowercase(input(${this.strCursor}:${this.strCursor} + ${this.str.length-1}))) then`;
         else
-            op = `if ("${this.str}" == input(${this.strCursor}:${this.strCursor} + ${this.str.length})) then`;
+            op = `if ("${this.str}" == input(${this.strCursor}:${this.strCursor} + ${this.str.length-1})) then`;
+        
         return `
         !analisis de ${this.str}
         ${op + this.strCondicion}

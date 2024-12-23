@@ -1,5 +1,5 @@
 // Clase para representar un nodo del árbol sintáctico
-const fs = require('fs');
+import fs from 'fs';
 
 class Node {
     constructor(value, left = null, right = null) {
@@ -155,12 +155,12 @@ export function parseRegex(input) {
 
 
 // Generación del autómata finito a partir del árbol sintáctico
-export function generateAutomata(node) {
+/*export*/ function generateAutomata(node) {
     let stateCounter = 0;
     const transitions = [];
     const finalStates = new Set();
 
-    export function traverse(node) {
+    function traverse(node) {
         if (!node) throw new Error("Nodo inválido durante la generación del autómata");
 
         const startState = stateCounter++;
@@ -222,7 +222,7 @@ export function generateAutomata(node) {
 }
 
 // Optimización de la tabla de estados mediante la teoría de subconjuntos
-export function optimizeAutomaton(automaton) {
+/*export*/ function optimizeAutomaton(automaton) {
     const epsilonClosure = (states, transitions) => {
         const stack = [...states];
         const closure = new Set(states);
@@ -297,7 +297,7 @@ export function optimizeAutomaton(automaton) {
 }
 
 // Minimización del DFA mediante partición
-export function minimizeDFA(dfa) {
+/*export*/ function minimizeDFA(dfa) {
     let partitions = [];
     let newPartitions = [];
 
@@ -359,7 +359,7 @@ export function minimizeDFA(dfa) {
 }
 
 // Generar DOT para el árbol sintáctico
-export function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
+/*export*/ function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
     let dot = '';
     const currentId = parentId;
 
@@ -384,7 +384,7 @@ export function generateTreeDot(node, parentId = 0, nextId = { value: 1 }) {
 }
 
 // Generar DOT para el autómata
-export function generateAutomatonDot(automaton) {
+/*export*/ function generateAutomatonDot(automaton) {
     let dot = `digraph Automaton {
   rankdir=LR;
 `;
@@ -405,13 +405,13 @@ export function generateAutomatonDot(automaton) {
     return dot;
 }
 
-export function writeDotToFile(dot, filename) {
+/*export*/ function writeDotToFile(dot, filename) {
     fs.writeFileSync(filename, dot);
     console.log(`Archivo DOT generado: ${filename}`);
 }
 
 // Construcción de la tabla de estados
-export function buildStateTable(automaton) {
+/*export*/ function buildStateTable(automaton) {
     const table = [];
     for (let [start, symbol, end] of automaton.transitions) {
         table.push({ Start: start, Symbol: symbol || 'ε', End: end });
@@ -420,7 +420,7 @@ export function buildStateTable(automaton) {
 }
 
 
-export function generateFortranCode(automaton) {
+/*export*/ function generateFortranCode(automaton) {
     const { states, startState, finalStates, transitions } = automaton;
 
     // Crear un mapa de transiciones por estado
@@ -431,68 +431,61 @@ export function generateFortranCode(automaton) {
         }
         stateTransitions[start][symbol] = end;
     });
+    let cursor = "cursor";
+    let inputString = "input";
+    let fortranCode = `
+        
+        currentState = ${startState}
+        isAccepted = .false.
+        continueLoop = .true.  ! Inicializamos la variable de control
 
-    let fortranCode = `program AutomataValidator
-  implicit none
-  character(len=100) :: inputString
-  integer :: currentState, i
-  logical :: isAccepted
-  logical :: continueLoop  ! Variable de control para el ciclo
+        do vecesAnalizado=${cursor}, len_trim(${inputString})
+            !do vecesAnalizado = 1, len_trim(${inputString})
+            if (.not. continueLoop) exit  ! Salir del ciclo si continueLoop es falso
 
-  print *, 'Enter a string to validate:'
-  read(*,*) inputString
-
-  currentState = ${startState}
-  isAccepted = .false.
-  continueLoop = .true.  ! Inicializamos la variable de control
-
-  do i = 1, len_trim(inputString)
-    if (.not. continueLoop) exit  ! Salir del ciclo si continueLoop es falso
-
-    select case(currentState)
+            select case(currentState)
 `;
 
     // Generar código Fortran para cada estado
     for (const state of states) {
         fortranCode += `
-        case (${state})
+                case (${state})
         `;
         let contador = 1;
         let cantidadTrans = transitions.filter(subArray => subArray[0] === state).length;
-
         for (const trans of transitions){
             if (trans[0] == state){
                 if (contador == 1){
                     fortranCode += `       
-            if (inputString(i:i) == '${trans[1]}') then
-                currentState = ${trans[2]}
-                isAccepted = .true.
+                    if (${inputString}(vecesAnalizado:vecesAnalizado) == '${trans[1]}') then
+                        currentState = ${trans[2]}
+                        isAccepted = .true.
                     `;
                     if (contador == cantidadTrans){
                         fortranCode += `
-            else
-                isAccepted = .false.
-                continueLoop = .false.  ! Cambiamos la variable de control
-            end if
+                    else
+                        isAccepted = .false.
+                        continueLoop = .false.  ! Cambiamos la variable de control
+                    end if
                         `;
                     }
                     contador++;
                 } else if (contador < cantidadTrans){
                     fortranCode += `        
-            else if (inputString(i:i) == '${trans[1]}') then
-                currentState = ${trans[2]}
-                isAccepted = .true.
+                    else if (${inputString}(vecesAnalizado:vecesAnalizado) == '${trans[1]}') then
+                        currentState = ${trans[2]}
+                        isAccepted = .true.
             `;
             contador++;
                 }else if(contador == cantidadTrans) {
                     fortranCode += `
-            else if (inputString(i:i) == '${trans[1]}') then 
-                currentState = ${trans[2]}
-                isAccepted = .true.
-            else
-                isAccepted = .false.
-                continueLoop = .false.  ! Cambiamos la variable de control
-            end if
+                    else if (${inputString}(vecesAnalizado:vecesAnalizado) == '${trans[1]}') then 
+                        currentState = ${trans[2]}
+                        isAccepted = .true.
+                    else
+                        isAccepted = .false.
+                        continueLoop = .false.  ! Cambiamos la variable de control
+                    end if
                     `;
                 }
             } 
@@ -502,22 +495,22 @@ export function generateFortranCode(automaton) {
             // validar que el state esté en finalStates
             if(finalStates.has(state)){
                 fortranCode += `
-            if ( (i) == len_trim(inputString)) then
-                isAccepted = .true.
-                continueLoop = .false.
-            else
-                isAccepted = .false.
-            end if
+                    if ( (vecesAnalizado) == len_trim(${inputString})) then
+                        isAccepted = .true.
+                        continueLoop = .false.
+                    else
+                        isAccepted = .false.
+                    end if
         `;
             }
         } else if (cantidadTrans < 1){
             fortranCode += `
-            if ( i  - 1 < len_trim(inputString)) then
-                isAccepted = .false.
-                continueLoop = .false.
-            else
-                isAccepted = .true.
-            end if
+                    if ( vecesAnalizado  - 1 < len_trim(${inputString})) then
+                        isAccepted = .false.
+                        continueLoop = .false.
+                    else
+                        isAccepted = .true.
+                    end if
         `;
         }
     }
@@ -525,18 +518,22 @@ export function generateFortranCode(automaton) {
 
 
     fortranCode += `
-    case default
-        print *, 'Error: Invalid state or transition.'
-        continueLoop = .false.  ! Cambiamos la variable de control
-    end select
-  end do
+            case default
+                print *, 'Error: Invalid state or transition.'
+                continueLoop = .false.  ! Cambiamos la variable de control
+            end select
+        end do
 
-  if (isAccepted) then
-    print *, 'The string is accepted.'
-  else
-    print *, 'The string is rejected.'
-  end if
-end program AutomataValidator
+        if (isAccepted) then
+            !print *, 'The string is accepted.'
+            lexeme=${inputString}(${cursor}:vecesAnalizado)
+            cursor = vecesAnalizado
+            vecesAnalizado = 0
+            return
+        else
+            !print *, 'The string is rejected.'
+            vecesAnalizado = 0
+        end if
 `;
 
     return fortranCode;
@@ -545,23 +542,23 @@ end program AutomataValidator
 
 // Prueba
 //const regex = "[ab].[ui].[012]+";
-const regex = "[ab]*[cd]+|[ef]?|[uioa][01234]+";
+const regex = "[ab][ui][012]+";
 try {
     const syntaxTree = parseRegex(regex);
-    console.log("Árbol sintáctico generado:", JSON.stringify(syntaxTree, null, 2));
-    // Generar y escribir DOT para el árbol sintáctico
-    const treeDot = `digraph Tree {${generateTreeDot(syntaxTree)}}`;
-    writeDotToFile(treeDot, 'tree.dot');
+    // console.log("Árbol sintáctico generado:", JSON.stringify(syntaxTree, null, 2));
+    // // Generar y escribir DOT para el árbol sintáctico
+    // const treeDot = `digraph Tree {${generateTreeDot(syntaxTree)}}`;
+    // writeDotToFile(treeDot, 'tree.dot');
 
     // Generar autómata inicial
     const automaton = generateAutomata(syntaxTree);
-    const automatonDot = generateAutomatonDot(automaton);
-    writeDotToFile(automatonDot, 'automaton_initial.dot');
+    // const automatonDot = generateAutomatonDot(automaton);
+    // writeDotToFile(automatonDot, 'automaton_initial.dot');
 
     // Optimizar el autómata
     const optimizedAutomaton = optimizeAutomaton(automaton);
-    const optimizedDot = generateAutomatonDot(optimizedAutomaton);
-    writeDotToFile(optimizedDot, 'automaton_optimized.dot');
+    // const optimizedDot = generateAutomatonDot(optimizedAutomaton);
+    // writeDotToFile(optimizedDot, 'automaton_optimized.dot');
 
     // Minimizar el DFA
     const minimizedDFA = minimizeDFA(optimizedAutomaton);
@@ -569,33 +566,33 @@ try {
     writeDotToFile(minimizedDot, 'automaton_minimized.dot');
 
 
-    // Mostrar tablas de estados
-    const initialStateTable = buildStateTable(automaton);
-    console.table(initialStateTable);
+    // // Mostrar tablas de estados
+    // const initialStateTable = buildStateTable(automaton);
+    // console.table(initialStateTable);
 
-    const optimizedStateTable = buildStateTable({
-        transitions: optimizedAutomaton.transitions,
-        finalStates: optimizedAutomaton.finalStates,
-    });
-    console.table(optimizedStateTable);
+    // const optimizedStateTable = buildStateTable({
+    //     transitions: optimizedAutomaton.transitions,
+    //     finalStates: optimizedAutomaton.finalStates,
+    // });
+    // console.table(optimizedStateTable);
 
-    const minimizedStateTable = buildStateTable({
-        transitions: minimizedDFA.transitions,
-        finalStates: minimizedDFA.finalStates,
-    });
-    console.table(minimizedStateTable);
+    // const minimizedStateTable = buildStateTable({
+    //     transitions: minimizedDFA.transitions,
+    //     finalStates: minimizedDFA.finalStates,
+    // });
+    // console.table(minimizedStateTable);
 
-    console.log("-----------------------------Autoama---------------------------")
-    console.log(minimizedDFA)
+    // console.log("-----------------------------Autoama---------------------------")
+    // console.log(minimizedDFA)
 
-    console.log("-----------Código Fortran Automata--------------")
+    console.log("-----------Código Fortransdfsdf Automata--------------")
     console.log(generateFortranCode(minimizedDFA))
 
 } catch (error) {
     console.error("Error:", error.message);
 }
 
-export default { parseRegex, generateAutomata, optimizeAutomaton, minimizeDFA, generateFortranCode };
+//export default { parseRegex, generateAutomata, optimizeAutomaton, minimizeDFA, generateFortranCode };
 
 //flujoa para que funcione
 // const regex = "[ab]*[cd]+|[ef]?|[uioa][01234]+";

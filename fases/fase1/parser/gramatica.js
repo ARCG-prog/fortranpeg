@@ -273,9 +273,7 @@ function peg$parse(input, options) {
         }
     }
     return pr[0];*/
-
-    return new nGramatica(pr);
-    /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
+    let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
     }
@@ -283,7 +281,9 @@ function peg$parse(input, options) {
     let noEncontrados = usos.filter(item => !ids.includes(item));
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
-    }*/
+    }
+    return new nGramatica(pr);
+    
 };
   var peg$f1 = function(id, alias, op) { 
         return new nProducciones(id,alias,op);

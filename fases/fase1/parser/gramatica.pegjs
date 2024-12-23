@@ -19,9 +19,7 @@ gramatica = _ pr:producciones+ _ {
         }
     }
     return pr[0];*/
-
-    return new nGramatica(pr);
-    /*let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
+    let duplicados = ids.filter((item, index) => ids.indexOf(item) !== index);
     if (duplicados.length > 0) {
         errores.push(new ErrorReglas("Regla duplicada: " + duplicados[0]));
     }
@@ -29,7 +27,9 @@ gramatica = _ pr:producciones+ _ {
     let noEncontrados = usos.filter(item => !ids.includes(item));
     if (noEncontrados.length > 0) {
         errores.push(new ErrorReglas("Regla no encontrada: " + noEncontrados[0]));
-    }*/
+    }
+    return new nGramatica(pr);
+    
 }
 /*
     _    "whitespace" = [ \t\n\r]*

@@ -1,3 +1,4 @@
+
 module parser
     implicit none
     contains
@@ -36,19 +37,28 @@ module parser
             return
         end if
         
-		!analisis de 1234567 *
+        !analisis de ccc4
+        if ("ccc4" == input(cursor:cursor + 3)) then
+            allocate( character(len=4) :: lexeme)
+            lexeme = input(cursor:cursor + 3)
+            cursor = cursor + 4
+            return
+        
+        end if
+      
+		!analisis de dd3 *
         vecesAnalizado=cursor
         do while (analizar)
             
-        !analisis de 1234567
-			if ("1234567" == input(vecesAnalizado:vecesAnalizado + 6)) then
-                vecesAnalizado=vecesAnalizado+7!length(1234567)
+        !analisis de dd3
+        if ("dd3" == input(vecesAnalizado:vecesAnalizado + 2)) then
+                vecesAnalizado=vecesAnalizado+3!length(dd3)
             else if(vecesAnalizado==cursor) then
                 analizar = .false.
                 
             else
                 analizar = .false.
-                allocate( character(len=7) :: lexeme)
+                allocate( character(len=3) :: lexeme)
                 lexeme = input(cursor:vecesAnalizado-1)
                 cursor = vecesAnalizado
                 vecesAnalizado=0
@@ -59,6 +69,15 @@ module parser
         end do
         analizar = .true.
         
+        !analisis de ffff5
+        if ("ffff5" == input(cursor:cursor + 4)) then
+            allocate( character(len=5) :: lexeme)
+            lexeme = input(cursor:cursor + 4)
+            cursor = cursor + 5
+            return
+        
+        end if
+      
         print *, "error lexico en col ", cursor, ', "'//input(cursor:cursor)//'"'
         lexeme = "ERROR"
     end function lexemas
@@ -78,6 +97,7 @@ module parser
 
 
 end module parser
+
   
 
   
@@ -112,7 +132,7 @@ program test
 	! 	allocate (character(len=len) :: input)
     !     read (1) input
 	! 	call parse(input)
-       call parse("12345671234567")
+       call parse("ccc4dd3ffff5")
 	! else
 	! 	print *, "error: file is not present"
 	! 	stop

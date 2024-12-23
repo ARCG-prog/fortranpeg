@@ -28,7 +28,7 @@ export class tipoLiteral extends NodoTipo {
         this.strCondicion = `
             allocate( character(len=${this.str.length}) :: lexeme)
             lexeme = input(cursor:cursor + ${this.str.length-1})
-            cursor = cursor + ${this.str.length-1}
+            cursor = cursor + ${this.str.length}
             return
         `;
     }

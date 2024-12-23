@@ -25,6 +25,7 @@ export default class InterpreteToken extends Visitor {
         /** @type {NodoTipo|null} */
         let literalaux=null;
         literal.setStr(nLiterales.str);
+        literal.asignarstrCondicion();
         if(nLiterales.i){//si biene i, quiere decir que es "ab"i asignar a literalaux para no hacer concatenacion
             literalaux = new tipoI();
             literalaux.setNodo(literal);

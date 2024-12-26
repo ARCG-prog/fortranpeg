@@ -61,20 +61,23 @@ expresion = ("@")? _ id:(identificador _ ":")?_ vari:varios? _ exp:expresiones _
     return new nExpresion(id,exp,veces);
 }
 
-/*etiqueta = ("@")? _ id:identificador _ ":" (varios)?*/
+expresion = ("@")? _ id:(identificador _ ":")?_ varios? _ expresiones _ ([?+*]/conteo)?
 
-varios = @("!"/"$"/"@"/"&")
+//ERRORES ENCONTRADOS: podia venir @pluck:@"expresion"  o 
+/*expresion  = (etiqueta/varios)? _ expresiones _ ([?+*]/conteo)?
 
-expresiones  =  id:identificador { 
-                                    usos.push(id); 
-                                    let iden = new nIdentificador(id);
-                                    return iden; 
-                                }
-                / lit:literales i:"i"? { return new nLiterales(lit,i?true:false); }
-                / "(" _ @opciones _ ")" 
-                / cor:corchetes "i"? /**/ {return new nRango(cor);}
-                / "." {return new nPunto(false); }
-                / "!." {return new nPunto(true); }
+etiqueta = ("@")? _ id:identificador _ ":" (varios)?
+
+ varios = ("!"/"$"/"@"/"&")*/
+
+varios = ("!"/"&"/"$")
+
+expresiones  =  id:identificador { usos.push(id) }
+                / literales "i"?
+                / "(" _ opciones _ ")"
+                / corchetes "i"?
+                / "."
+                / "!."
 
 // conteo = "|" parteconteo _ (_ delimitador )? _ "|"
 
@@ -91,42 +94,8 @@ conteo = "|" _ (numero / id:identificador) _ "|"
 
 // Regla principal que analiza corchetes con contenido
 corchetes
-    = "[" cont:(/*rango /*/ contenido) "]" {
-        //let cont=cont;
-        debugger;
-        let caracteres="";
-        let rangos="";
-        for(let i=0;i<cont.length;i++){
-          if(cont[i]=="-" && i>0 && i<cont.length-1){//si es un rango
-            let inicio=cont[i-1];
-            let fin=cont[i+1];
-            if(inicio.charCodeAt(0) > fin.charCodeAt(0)) {//si el rango es inválido
-              errores.push(new ErrorReglas(`Rango inválido: [${inicio}-${fin}]`));
-            }
-            else{
-              let res="";
-              for(let j=inicio.charCodeAt(0);j<=fin.charCodeAt(0);j++){
-                res+=String.fromCharCode(j);
-              }
-              rangos+=res;
-              caracteres=caracteres.slice(0,-1)
-              i++;
-            }
-          }else{
-            caracteres+=cont[i];
-          }
-        }
-        return "["+caracteres+rangos+"]";
-        //return `Entrada válida: [${input}]`;
-        /*  
-            let map = new Map();
-            if !map.has("cont") {
-                map.set("corchetes", "funcion corchetes()");
-            }
-            
-            return funcCorchetes(map);
-        */
-       //throw new Error("No implementado");
+    = "[" contenido:(rango / texto)+ "]" {
+        return `Entrada válida: [${input}]`;
     }
 
 // Regla para validar un rango como [A-Z]
@@ -136,33 +105,47 @@ rango
             throw new Error(`Rango inválido: [${inicio}-${fin}]`);
 
         }
-        return `${inicio}-${fin}`;*/
+        return `${inicio}-${fin}`;//se debe crear la lista
     }
 
 // Regla para caracteres individuales
 caracter
-    = [a-zA-Z0-9_ ] { /*return text()*/}
-    
-// Coincide con cualquier contenido que no incluya "]"
-contenido
-    = //(/*corchete /*/ texto)+
-    //val:$([^[\]-] "-" [^[\]-]) { return [val,"r"]; } //rango 0-9
-    /*/*/ val:$([^[\]]+) { return val.split(""); } //str abc
+    = [a-zA-Z0-9_ ] { return text()}
 
-corchete
-    = "[" contenido "]"
+
+
+/* GRAMATICAS ANTERIORES, DAN ERROR AL TRATAR DE RECONOCER EJ: [abc0-3], reconocimiento esperado: [a,b,c,1,2,3]
+                                                                  Salida que se obtiene: [a,b,c,1,-,3]
+
+ contenido
+   = elementos:(corchete / texto)+ {
+      return new n.Contenido(elementos);
+  }
+
+ corchete
+    = "[" contenido "]" 
+*/
+
+// Coincide con cualquier contenido que no incluya "]"
 
 texto
-    = [^\[\]]+ { /**/}
+    = [^\[\]]
 
 literales = '"' str:$stringDobleComilla* '"' { return str; }
             / "'" str:$stringSimpleComilla* "'"{ return str; }
 
 stringDobleComilla = !('"' / "\\" / finLinea) .
                     / "\\" escape
+                    //(se quitaron porque peggyjs no acepta cadenas con multilinea) igual no funcionaba xd
+                    // / continuacionLinea
 
 stringSimpleComilla = !("'" / "\\" / finLinea) .
                     / "\\" escape
+                    //(se quitaron porque peggyjs no acepta cadenas con multilinea) igual no funcionaba xd
+                    // / continuacionLinea
+
+//(se quitaron porque peggyjs no acepta cadenas con multilinea) igual no funcionaba xd
+// continuacionLinea = "\\" secuenciaFinLinea
 
 continuacionLinea = "\\" secuenciaFinLinea
 

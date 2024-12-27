@@ -198,10 +198,36 @@ end module parser
     }
 
     visitString(node) {
+       
+        let var1= node.val.split("");
+        let cambioNodeVal="";
+        let cambioLength=0;
+        if(var1.length==2 && var1[0]=="\\"){
+            cambioLength=1;
+            //var1 chanage to ascci number
+            let transformedStr = node.val.replace(/\\(.)/, (match, p1) => {
+                if (p1 === 'n') return '\n'; // Nueva línea (Line Feed)
+                if (p1 === 't') return '\t'; // Tabulación horizontal (Horizontal Tab)
+                if (p1 === 'r') return '\r'; // Retorno de carro (Carriage Return)
+                if (p1 === 'f') return '\f'; // Avance de página (Form Feed)
+                if (p1 === 'v') return '\v'; // Tabulación vertical (Vertical Tab)
+                if (p1 === 'b') return '\b'; // Retroceso (Backspace)
+                if (p1 === '0') return '\0'; // Nulo (Null character)
+
+                // Agrega más casos según sea necesario
+                return p1;
+            });
+            let ascii = transformedStr.charCodeAt(0);
+            cambioNodeVal=`char(${ascii})`;
+        }else{
+            cambioNodeVal = `"${node.val}"`;
+            cambioLength = node.val.length;
+        }
+
         const condition = node.isCase 
-        ? `tolower("${node.val}") == tolower(input(cursor:cursor + ${ node.val.length - 1} ))`
-        :  `"${node.val}" == input(cursor:cursor + ${node.val.length - 1} )`;
-        return this.renderQuantifierOption(node.qty, condition, node.val.length)
+        ? `tolower(${cambioNodeVal}) == tolower(input(cursor:cursor + ${ cambioLength - 1} ))`
+        :  `${cambioNodeVal} == input(cursor:cursor + ${cambioLength - 1} )`;
+        return this.renderQuantifierOption(node.qty, condition, cambioLength)
     }
 
     visitAny(node) { 
